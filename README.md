@@ -27,5 +27,11 @@ python example.py
 ```
 
 ## TODO:
-
 1. get the latest time on the database and only query the remaining data from binance-spot-api
+2. add more "binsizes" in get_binance currently limited to only {"1m": 1, "5m": 5, "1h": 60, "1d": 1440}
+
+## Current state:
+1. Timeframes array in constants.py currently takes only 1h and 1d data
+2. Since save = False in get_all_binance() everytime we run the insert_data command, it re-downloads the data from the binance-api
+3. 
+
