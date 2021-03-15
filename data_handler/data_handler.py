@@ -60,14 +60,21 @@ class DataHandler:
             for t in timeframes:
                 self.insert_data(s,t)
 
-    def get_data(self, symbol, timeframe, range):
+    def get_data(self, symbol, timeframe, range=None):
         '''
         range = [start_time, end_time] 
-        where None = :
+        examples:
+        range = ['2017-02-20','2019-02-20'] -> from 2017-02-20 to 2019-02-20
+        range = [None,'2019-02-20'] -> from start to 2019-02-20
+        range = ['2017-02-20',None] -> from 2017-02-20 to now
+        range = [None,None] ->  all data
+        range = None ->  all data
         '''
         table = f"{symbol}"
 
-        if range[0] == None:
+        if range == None or (range[0] == None and range[1] == None):
+            data = self.session.execute(f"select * from {table} where timeframe = '{timeframes_detailed[timeframes.index(timeframe)]}'")
+        elif range[0] == None:
             data = self.session.execute(f"select * from {table} where timeframe = '{timeframes_detailed[timeframes.index(timeframe)]}' and timestamp <= '{range[1]}'")
         elif range[1] == None:
             data = self.session.execute(f"select * from {table} where timeframe = '{timeframes_detailed[timeframes.index(timeframe)]}' and timestamp >= '{range[0]}'")
