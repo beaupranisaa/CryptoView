@@ -19,11 +19,11 @@ docker run -d --name cassandra -v <DIRECTORY PATH>:/var/lib/cassandra -p 9042:90
 ```
 4. Initialize the database
 ```console
-python initialize_database.py
+python data_handler/initialize_database.py
 ```
 5. Check out the example usage
 ```console
-python example.py
+python data_handler/example.py
 ```
 
 ## TODO:
