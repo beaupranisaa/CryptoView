@@ -4,7 +4,7 @@
 
 ### DataHandler
 
-1. Install prerequisites
+1. Install the prerequisites
 ```console
 pip install -r requirements.txt
 sudo apt install -y docker
@@ -17,7 +17,7 @@ mkdir ~/storage
 ```console
 docker run -d --name cassandra -v <DIRECTORY PATH>:/var/lib/cassandra -p 9042:9042 -p 9160:9160 cassandra
 ```
-4. Initialize database
+4. Initialize the database
 ```console
 python initialize_database.py
 ```
