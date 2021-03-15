@@ -2,6 +2,8 @@
 
 ## Getting Started:
 
+### DataHandler
+
 1. Install prerequisites
 ```console
 pip install -r requirements.txt
@@ -9,7 +11,6 @@ sudo apt install -y docker
 ```
 2. Create a directory where data will be stored
 ```console
-cd ~
 mkdir ~/storage
 ```
 3. Run a cassandra container on docker and mount the directory for persistent storage
@@ -20,7 +21,7 @@ docker run -d --name cassandra -v <DIRECTORY PATH>:/var/lib/cassandra -p 9042:90
 ```console
 python initialize_database.py
 ```
-5. Check out the example
+5. Check out the example usage
 ```console
 python example.py
 ```
