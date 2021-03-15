@@ -17,7 +17,7 @@ class DataHandler:
 
         # TODO: get the lastest timestamp of the database for each of the coins.
 
-    def initialize_databse(self):
+    def initialize_database(self):
         #CREATE KEYSPACE
         try:
             print("Creating keyspace")
@@ -34,7 +34,7 @@ class DataHandler:
             except:
                 print(f"Unable to create table {symbol}")
 
-    def input_data(self, symbol, timeframe):
+    def insert_data(self, symbol, timeframe):
         get_what = 'get_historical_klines'
 
         full_data, new_data = get_all_binance(get_what, symbol, timeframe, save=False)
@@ -55,10 +55,10 @@ class DataHandler:
 
             self.session.execute(query_string)
 
-    def input_all_data(self):
+    def insert_all_data(self):
         for s in symbols:
             for t in timeframes:
-                self.input_data(s,t)
+                self.insert_data(s,t)
 
     def get_data(self, symbol, timeframe, range):
         '''
@@ -86,5 +86,5 @@ if __name__ == "__main__":
 
     datahandler = DataHandler()
 
-    #datahandler.input_data('ETHUSDT', '1d')
-    datahandler.input_all_data()
+    #datahandler.insert_data('ETHUSDT', '1d')
+    datahandler.insert_all_data()

@@ -1,0 +1,4 @@
+python-binance==0.7.9
+cassandra-driver==3.24.0
+tqdm==4.57.0
+pandas==1.2.1
