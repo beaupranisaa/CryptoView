@@ -11,7 +11,7 @@ sudo apt install -y docker
 ```
 2. Create a directory where data will be stored
 ```console
-mkdir ~/storage
+mkdir <DIRECTORY PATH>
 ```
 3. Run a cassandra container on docker and mount the directory for persistent storage
 ```console
