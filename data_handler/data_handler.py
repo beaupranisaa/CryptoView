@@ -8,7 +8,7 @@ from tqdm import tqdm
 
 class DataHandler:
     def __init__(self):
-        cluster = Cluster(['127.0.0.1'])
+        cluster = Cluster(['puffer.cs.ait.ac.th'])
         self.session = cluster.connect()
         try:
             self.session.execute('USE cryptoview')
@@ -28,11 +28,7 @@ class DataHandler:
         self.session.execute('USE cryptoview')
 
         for symbol in tqdm(symbols):
-            try:
-                #print(f"Creating table {symbol}_{timeframe}")
-                self.session.execute(f"CREATE TABLE {symbol}(timeframe text, {table_column_type}, PRIMARY KEY (timeframe, timestamp))") 
-            except:
-                print(f"Unable to create table {symbol}")
+            self.session.execute(f"CREATE TABLE {symbol}(timeframe text, {table_column_type}, PRIMARY KEY (timeframe, timestamp))") 
 
     def insert_data(self, symbol, timeframe):
         get_what = 'get_historical_klines'
