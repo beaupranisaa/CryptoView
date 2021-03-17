@@ -2,3 +2,5 @@ python-binance
 cassandra-driver
 tqdm
 pandas
+ta
+dash
