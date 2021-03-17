@@ -13,7 +13,7 @@ class DataHandler:
         try:
             self.session.execute('USE cryptoview')
         except:
-            self.initialize_databse()
+            self.initialize_database()
 
         # TODO: get the lastest timestamp of the database for each of the coins.
 
