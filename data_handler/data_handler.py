@@ -3,7 +3,7 @@
 from cassandra.cluster import Cluster
 import pandas as pd
 from constants import *
-from get_binance import *
+from get_binance import get_all_binance
 from tqdm import tqdm
 
 class DataHandler:
@@ -22,6 +22,14 @@ class DataHandler:
             self.session.execute("CREATE KEYSPACE cryptoview WITH replication = {'class':'SimpleStrategy', 'replication_factor': 1}")
         except:
             print("Keyspace already created")
+
+        table_column_type = ''
+        for feature, feature_type in zip(features,features_types):
+            table_column_type += feature
+            table_column_type += " "
+            table_column_type += feature_type
+            table_column_type += ", "
+        table_column_type = table_column_type [:-2]
 
         self.session.execute('USE cryptoview')
 
@@ -44,6 +52,12 @@ class DataHandler:
                     values_string += "'"
                 values_string += ', '
             values_string = values_string[:-2]
+
+            table_column = ''
+            for feature in features:
+                table_column += feature
+                table_column += ', '
+            table_column = table_column[:-2]
 
             query_string = f"INSERT INTO {symbol}(timeframe, {table_column}) VALUES ('{timeframes_detailed[timeframes.index(timeframe)]}', {values_string})"
 
@@ -86,7 +100,7 @@ class DataHandler:
         '''
         Returns latest timestamp (datetime) of a symbol+timeframe
         '''
-        timestamp = self.session.execute(f"select timestamp from {symbol} where timeframe = '{timeframes_detailed[timeframes.index(timeframe)]}' limit 1")
+        timestamp = self.session.execute(f"select timestamp from {symbol} where timeframe = '{timeframes_detailed[timeframes.index(timeframe)]}' order by timestamp desc limit 1")
         return next(iter(timestamp)).timestamp
 
 if __name__ == "__main__":
