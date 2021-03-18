@@ -15,8 +15,6 @@ class DataHandler:
         except:
             self.initialize_database()
 
-        # TODO: get the lastest timestamp of the database for each of the coins.
-
     def initialize_database(self):
         #CREATE KEYSPACE
         try:
@@ -66,16 +64,15 @@ class DataHandler:
         range = [None,None] ->  all data
         range = None ->  all data
         '''
-        table = f"{symbol}"
 
         if range == None or (range[0] == None and range[1] == None):
-            data = self.session.execute(f"select * from {table} where timeframe = '{timeframes_detailed[timeframes.index(timeframe)]}'")
+            data = self.session.execute(f"select * from {symbol} where timeframe = '{timeframes_detailed[timeframes.index(timeframe)]}'")
         elif range[0] == None:
-            data = self.session.execute(f"select * from {table} where timeframe = '{timeframes_detailed[timeframes.index(timeframe)]}' and timestamp <= '{range[1]}'")
+            data = self.session.execute(f"select * from {symbol} where timeframe = '{timeframes_detailed[timeframes.index(timeframe)]}' and timestamp <= '{range[1]}'")
         elif range[1] == None:
-            data = self.session.execute(f"select * from {table} where timeframe = '{timeframes_detailed[timeframes.index(timeframe)]}' and timestamp >= '{range[0]}'")
+            data = self.session.execute(f"select * from {symbol} where timeframe = '{timeframes_detailed[timeframes.index(timeframe)]}' and timestamp >= '{range[0]}'")
         else:
-            data = self.session.execute(f"select * from {table} where timeframe = '{timeframes_detailed[timeframes.index(timeframe)]}' and timestamp >= '{range[0]}' and timestamp <= '{range[1]}'")
+            data = self.session.execute(f"select * from {symbol} where timeframe = '{timeframes_detailed[timeframes.index(timeframe)]}' and timestamp >= '{range[0]}' and timestamp <= '{range[1]}'")
 
         data = pd.DataFrame(data)
 
@@ -84,6 +81,13 @@ class DataHandler:
 
         data.set_index('timestamp', inplace=True)
         return data
+    
+    def get_latest_timestamp(self, symbol, timeframe):
+        '''
+        Returns latest timestamp (datetime) of a symbol+timeframe
+        '''
+        timestamp = self.session.execute(f"select timestamp from {symbol} where timeframe = '{timeframes_detailed[timeframes.index(timeframe)]}' limit 1")
+        return next(iter(timestamp)).timestamp
 
 if __name__ == "__main__":
 
