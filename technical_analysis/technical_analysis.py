@@ -9,39 +9,37 @@ import pandas as pd
 from ta import add_all_ta_features #pip install ta
 from ta.utils import dropna
 
+#df = pd.read_csv('BTCUSDT-1h-data.csv', sep = ',')
+#df = dropna(df)
+#df = add_all_ta_features(df, open="open", high = "high", low="low", close="close", 
+#                           volume="volume", fillna=True)
 
-df = pd.read_csv('BTCUSDT-1h-data.csv', sep = ',')
-df = dropna(df)
-df = add_all_ta_features(df, open="open", high = "high", low="low", close="close", 
-                           volume="volume", fillna=True)
-
-def moving_averages():
+def moving_averages(df):
     sma_fast = df['trend_sma_fast']
     sma_slow = df['trend_sma_slow']
     return sma_fast, sma_slow
 
-def prices():
-    timestamp = df['timestamp']
+def prices(df):
+    timestamp = df.index
     open = df['open']
     high = df['high']
     close = df['close']
     low = df['low']
     return timestamp, open, high, close, low
 
-def relative_strength():
+def relative_strength(df):
     momentum_rsi = df['momentum_rsi']
     momentum_stoch_rsi = df['momentum_stoch_rsi']
     momentum_stoch_rsi_k = df['momentum_stoch_rsi_k']
     return momentum_rsi, momentum_stoch_rsi, momentum_stoch_rsi_k
 
-def macd_signals():
+def macd_signals(df):
     macd_line = df['trend_macd']
     signal_line = df['trend_macd_signal']
     return macd_line, signal_line
 
-def commodity_channel():
+def commodity_channel(df):
     cci_signal = df['trend_cci']
-    print(cci_signal)
     return cci_signal
 
 #print(df.columns)

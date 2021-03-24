@@ -7,59 +7,49 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
-import sample as model
-import technicalanalysis 
+import technical_analysis.technical_analysis as technicalanalysis
+from ta import add_all_ta_features 
 
+from data_handler.data_handler import DataHandler
 
 coins = ['Bitcoin', 'Etheriumm', 'Ripple',
          'Tether', 'BTC Cash', 'BTC SV', 'Litecoin',
          'EOS', 'Binance', 'Tezos']
+
 ###################### Load Data ######################
 
-
-
-
-
-
-
-
-
-
-
-
+dh = DataHandler()
+df = dh.get_data('BTCUSDT','1h')
+df = add_all_ta_features(df, open="open", high = "high", low="low", close="close", 
+                           volume="volume", fillna=True)
 
 ###################### Layout ##############################
 # Create the app
 app = dash.Dash()
-sma_fast, sma_slow = technicalanalysis.moving_averages()
+sma_fast, sma_slow = technicalanalysis.moving_averages(df)
 colors = {'background': '#000112','text': '#DADBFE'}
-avian1 = model.SIRSI_MODEL(beta0 = 0.5, beta1 = 0.5, h = 0.1, Iw = 1, T = 600, transmission = 'Periodic')
-avian2 = model.SIRSI_MODEL(beta0 = 0.5, beta1 = 0.5, h = 0.1, Iw = 1, T = 1655, transmission = 'Non-Periodic')
-Sd, IHd, Rd, S, I = avian1.main()
-Sd2, IHd2, Rd2, S2, I2 = avian2.main()
-timestamp, open, high, close, low = technicalanalysis.prices()
-macd_line, signal_line = technicalanalysis.macd_signals()
-momentum_rsi, momentum_stoch_rsi, momentum_stoch_rsi_k = technicalanalysis.relative_strength()
-# df = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv')
+timestamp, open, high, close, low = technicalanalysis.prices(df)
+macd_line, signal_line = technicalanalysis.macd_signals(df)
+momentum_rsi, momentum_stoch_rsi, momentum_stoch_rsi_k = technicalanalysis.relative_strength(df)
 
-candlestick = go.Figure(data= [go.Candlestick(x = timestamp, 
-                                              open = open, 
-                                              high = high,
-                                              low = low,
-                                              close = close)])
-candlestick.update_layout(
-    title='Candlestick Chart',
-    yaxis_title='AAPL Stock',
-    shapes = [dict(x0 ='2017-11-09', x1 ='2017-12-09', 
-                    y0 = 0, y1 = 0, 
-                    xref='x',
-                    yref='paper',
-                    line_width = 0)])
-
-
-candlestick.update_layout(paper_bgcolor = colors['background'], 
-                          font = {'color': colors['text'], 'family': "Helvetica"},
-                          plot_bgcolor = colors['background'])
+#candlestick = go.Figure(data= [go.Candlestick(x = timestamp, 
+#                                              open = open, 
+#                                              high = high,
+#                                              low = low,
+#                                              close = close)])
+#candlestick.update_layout(
+#    title='Candlestick Chart',
+#    yaxis_title='AAPL Stock',
+#    shapes = [dict(x0 ='2017-11-09', x1 ='2017-12-09', 
+#                    y0 = 0, y1 = 0, 
+#                    xref='x',
+#                    yref='paper',
+#                    line_width = 0)])
+#
+#
+#candlestick.update_layout(paper_bgcolor = colors['background'], 
+#                          font = {'color': colors['text'], 'family': "Helvetica"},
+#                          plot_bgcolor = colors['background'])
 
 gauge_rsi = go.Figure()
 gauge_rsi.add_trace(go.Indicator(
@@ -330,28 +320,7 @@ app.layout = html.Div(style = {'backgroundColor': colors['background']},
                                             style = {'width': '50%', 'display': 'inline-block',
                                                      'backgroundColor': colors['background']}),
                                  
-                                  
-                                  dcc.Graph(id = 'hist_graph1',
-                                            figure = {'data': [{'y': Sd,'type': 'line', 'name':'Susceptible'},
-                                                               {'y': IHd, 'type': 'line', 'name': 'Infected'},
-                                                               {'y': Rd, 'type': 'line', 'name': 'Recovered'}],
-                                                      'layout': {'plot_bgcolor': colors['background'],
-                                                                 'paper_bgcolor': colors['background'],
-                                                                 'font': {'color': colors['text']}}},
-                                            style = {'width': '50%', 'display': 'inline-block'}),
-                                                                   
-                                  dcc.Graph(id = 'hist_graph2',
-                                            figure = {'data': [{'y': Sd2, 'type': 'line', 'name': 'Susceptible'},
-                                                               {'y': IHd2, 'type': 'line', 'name': 'Infected'},
-                                                               {'y': Rd2, 'type': 'line', 'name': 'Recovered'}],
-                                                      'layout':{'plot_bgcolor': colors['background'],
-                                                                 'paper_bgcolor': colors['background'],
-                                                                 'font': {'color': colors['text']},
-                                                                 'plot_bgcolor': colors['background']}},
-                                            
-                                            style = {'width': '50%', 'display': 'inline-block'}),
-                                  
-                                    dcc.Graph(id = 'hist_graph3',
+                                  dcc.Graph(id = 'hist_graph3',
                                             figure = {'data': [{'x': timestamp, 'y': momentum_rsi, 'type': 'line', 'name': 'Momentum RSI'},],
                                                       'layout': {'plot_bgcolor': colors['background'],
                                                                  'paper_bgcolor': colors['background'],
