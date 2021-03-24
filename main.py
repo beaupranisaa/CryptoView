@@ -7,7 +7,7 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
-import technical_analysis.technical_analysis as technicalanalysis
+import analytics.analytics as analytics
 from ta import add_all_ta_features 
 
 from data_handler.data_handler import DataHandler
@@ -26,11 +26,11 @@ df = add_all_ta_features(df, open="open", high = "high", low="low", close="close
 ###################### Layout ##############################
 # Create the app
 app = dash.Dash()
-sma_fast, sma_slow = technicalanalysis.moving_averages(df)
+sma_fast, sma_slow = analytics.moving_averages(df)
 colors = {'background': '#000112','text': '#DADBFE'}
-timestamp, open, high, close, low = technicalanalysis.prices(df)
-macd_line, signal_line = technicalanalysis.macd_signals(df)
-momentum_rsi, momentum_stoch_rsi, momentum_stoch_rsi_k = technicalanalysis.relative_strength(df)
+timestamp, open, high, close, low = analytics.prices(df)
+macd_line, signal_line = analytics.macd_signals(df)
+momentum_rsi, momentum_stoch_rsi, momentum_stoch_rsi_k = analytics.relative_strength(df)
 
 #candlestick = go.Figure(data= [go.Candlestick(x = timestamp, 
 #                                              open = open, 

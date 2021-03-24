@@ -6,13 +6,8 @@ Created on Wed Feb 22 12:46:39 2021
 """
 import numpy as np
 import pandas as pd
-from ta import add_all_ta_features #pip install ta
+from ta import add_all_ta_features
 from ta.utils import dropna
-
-#df = pd.read_csv('BTCUSDT-1h-data.csv', sep = ',')
-#df = dropna(df)
-#df = add_all_ta_features(df, open="open", high = "high", low="low", close="close", 
-#                           volume="volume", fillna=True)
 
 def moving_averages(df):
     sma_fast = df['trend_sma_fast']
@@ -41,7 +36,3 @@ def macd_signals(df):
 def commodity_channel(df):
     cci_signal = df['trend_cci']
     return cci_signal
-
-#print(df.columns)
-
-    
