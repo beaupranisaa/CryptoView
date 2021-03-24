@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from data_handler import DataHandler
+from data_handler.data_handler import DataHandler
 
 # Create a data handler
 dh = DataHandler()
