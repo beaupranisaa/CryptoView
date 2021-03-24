@@ -2,9 +2,10 @@
 
 from cassandra.cluster import Cluster
 import pandas as pd
-from constants import *
-from get_binance import get_all_binance
 from tqdm import tqdm
+
+from data_handler.constants import *
+from data_handler.get_binance import get_all_binance
 
 class DataHandler:
     def __init__(self):
