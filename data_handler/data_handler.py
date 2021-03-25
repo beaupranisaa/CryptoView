@@ -40,7 +40,9 @@ class DataHandler:
     def insert_data(self, symbol, timeframe):
         get_what = 'get_historical_klines'
 
-        full_data, new_data = get_all_binance(get_what, symbol, timeframe, save=False)
+        start_time = self.get_latest_timestamp(symbol,timeframe)
+
+        full_data = get_all_binance(get_what, symbol, timeframe, start_time)
 
         for index, row in tqdm(list(full_data.iterrows())):
             values_string = f"'{index}', "
