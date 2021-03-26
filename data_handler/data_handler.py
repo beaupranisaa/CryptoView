@@ -71,7 +71,7 @@ class DataHandler:
             for t in timeframes:
                 self.insert_data(s,t)
 
-    def get_data(self, symbol, timeframe, range=None):
+    def get_data(self, symbol, timeframe, range=None, limit = None):
         '''
         range = [start_time, end_time] 
         examples:
@@ -82,14 +82,19 @@ class DataHandler:
         range = None ->  all data
         '''
 
-        if range == None or (range[0] == None and range[1] == None):
-            data = self.session.execute(f"select * from {symbol} where timeframe = '{timeframes_detailed[timeframes.index(timeframe)]}'")
-        elif range[0] == None:
-            data = self.session.execute(f"select * from {symbol} where timeframe = '{timeframes_detailed[timeframes.index(timeframe)]}' and timestamp <= '{range[1]}'")
-        elif range[1] == None:
-            data = self.session.execute(f"select * from {symbol} where timeframe = '{timeframes_detailed[timeframes.index(timeframe)]}' and timestamp >= '{range[0]}'")
+        if limit != None:
+            limit_string = f"limit {limit}"
         else:
-            data = self.session.execute(f"select * from {symbol} where timeframe = '{timeframes_detailed[timeframes.index(timeframe)]}' and timestamp >= '{range[0]}' and timestamp <= '{range[1]}'")
+            limit_string = ""
+
+        if range == None or (range[0] == None and range[1] == None):
+            data = self.session.execute(f"select * from {symbol} where timeframe = '{timeframes_detailed[timeframes.index(timeframe)]}' order by timestamp desc {limit_string}")
+        elif range[0] == None:
+            data = self.session.execute(f"select * from {symbol} where timeframe = '{timeframes_detailed[timeframes.index(timeframe)]}' and timestamp <= '{range[1]}' order by timestamp desc {limit_string}")
+        elif range[1] == None:
+            data = self.session.execute(f"select * from {symbol} where timeframe = '{timeframes_detailed[timeframes.index(timeframe)]}' and timestamp >= '{range[0]}' order by timestamp desc {limit_string}")
+        else:
+            data = self.session.execute(f"select * from {symbol} where timeframe = '{timeframes_detailed[timeframes.index(timeframe)]}' and timestamp >= '{range[0]}' and timestamp <= '{range[1]}' order by timestamp desc {limit_string}")
 
         data = pd.DataFrame(data)
 
