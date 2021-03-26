@@ -20,7 +20,8 @@ from ui.custom_dash_components import *
 
 dh = DataHandler()
 
-###################### Layout ##############################
+###################### Layout ###########################
+
 # Create the app
 app = dash.Dash()
 
@@ -31,18 +32,12 @@ app.layout = html.Div(style = {'backgroundColor': colors['background'],
                                 'paddingBottom': 0},
                       children = [minute_interval, title, tabs, number_indicator])
 
-
 @app.callback(Output('num-indicator', 'figure'),
               [Input('interval-component', 'n_intervals'),
               Input('coin-tabs', 'value')])
 def update_data(n, symbol):
-    dh.insert_data(symbol,'1m')
-    df = dh.get_data(symbol,'1m', limit = 2)
-    print('updating market change indicators')
+    df = dh.get_data(symbol,'1m', limit = 3)
     return create_market_change_indicator(df)
 
 if __name__ == '__main__':
     app.run_server(debug=True)
-
-
-

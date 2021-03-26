@@ -6,7 +6,7 @@ from plotly.subplots import make_subplots
 coins = ['Bitcoin','Ethereum', "Ripple", "Dogecoin", 'Tezos','Litecoin','EOS','Binance', 'BTC Cash']
 symbols = ["BTCUSDT", "ETHUSDT", "XRPUSDT", "DOGEUSDT", "XTZUSDT", "LTCUSDT", "EOSUSDT", "BNBUSDT", "BCHUSDT"]
 
-colors = {'background': '#000112','text': '#DADBFE'}
+colors = {'background': '#000022','text': '#DADBFE'}
 
 title = html.H1(children = 'CryptoView', 
                 style = {'textAlign': 'left', 
@@ -28,6 +28,8 @@ tabs = dcc.Tabs(id = 'coin-tabs', value = symbols[0],
                 'background': 'firebrick'},
         style = {'color': colors['text'],
                 'font-family': 'Helvetica',
+                'font-size':"120%",
+                'marginTop':"0px",
                 'paddingLeft': "30px",
                 'paddingRight': "30px"})
 
@@ -43,8 +45,8 @@ def create_market_change_indicator(data):
     ''' 
     Input is a dataframe containing data of atleast the last two timestamps
     '''
-    current_data = data.iloc[-1,:]
-    previous_data = data.iloc[-2,:]
+    current_data = data.iloc[1,:]
+    previous_data = data.iloc[2,:]
 
     fig = go.Figure()
 
@@ -70,7 +72,7 @@ def create_market_change_indicator(data):
 
 minute_interval = dcc.Interval(
         id='interval-component',
-        interval=60*1000, # in milliseconds
+        interval=60*1000,
         n_intervals=0
     )
 

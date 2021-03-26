@@ -21,13 +21,11 @@ docker run -d --name cassandra -v <DIRECTORY PATH>:/var/lib/cassandra -p 9042:90
 ```console
 python -m data_handler.initialize_database
 ```
-5. Check out the example usage
+5. Startup the database updater
 ```console
-python -m data_handler.example
+python -m data_handler.database_updater
 ```
-
-## TODO:
-1. get the latest time on the database and only query the remaining data from binance-spot-api
-
-## Current state:
-1. Since save = False in get_all_binance() everytime we run the insert_data command, it re-downloads the data from the binance-api
+6. Startup the dashboard
+```console
+python main.py
+```
