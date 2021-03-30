@@ -30,7 +30,22 @@ app.layout = html.Div(style = {'backgroundColor': colors['background'],
                                 'marginBottom' : 0,
                                 'paddingTop' : 0,
                                 'paddingBottom': 0},
-                      children = [minute_interval, title, tabs, number_indicator])
+                      children = [minute_interval, title, tabs, number_indicator, timeframe_tabs, graph_tabs, stat_choice, ohlc_graph ])
+
+@app.callback(
+    Output('ohlc', 'figure'),
+    Input('graph_tab','value'),
+    Input('time_tabs', 'value'),
+    Input('coin-tabs', 'value'),
+    Input('macdmarket','value'),
+    )
+
+def update_graph(graph_name, time_tabs_name, coin_tab_name, stat_name):
+
+    df_ohlc = dh.get_data(coin_tab_name, time_tabs_name, limit = 1000)
+    df_ohlc = df_ohlc.sort_values(by=['timestamp'])
+    return create_ohlc(df_ohlc, graph_name, time_tabs_name, coin_tab_name, stat_name)
+
 
 @app.callback(Output('num-indicator', 'figure'),
               [Input('interval-component', 'n_intervals'),
