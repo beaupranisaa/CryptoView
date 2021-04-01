@@ -40,7 +40,10 @@ class DataHandler:
     def insert_data(self, symbol, timeframe):
         get_what = 'get_historical_klines'
 
-        start_time = self.get_latest_timestamp(symbol,timeframe)
+        try:
+            start_time = self.get_latest_timestamp(symbol,timeframe)
+        except:
+            start_time = None
 
         full_data = get_all_binance(get_what, symbol, timeframe, start_time)
 
