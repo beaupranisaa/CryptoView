@@ -30,7 +30,9 @@ app.layout = html.Div(style = {'backgroundColor': colors['background'],
                                 'marginBottom' : 0,
                                 'paddingTop' : 0,
                                 'paddingBottom': 0},
-                      children = [minute_interval, title, tabs, number_indicator, timeframe_tabs, graph_tabs, stat_choice, ohlc_graph ])
+                      children = [minute_interval, title, tabs, number_indicator, timeframe_tabs, graph_tabs, 
+                      stat_choice, ohlc_graph,day_interval,toppers_table,market_summary_table, 
+                      market_summary_icon, market_summary_graph ])
 
 @app.callback(
     Output('ohlc', 'figure'),
@@ -41,7 +43,6 @@ app.layout = html.Div(style = {'backgroundColor': colors['background'],
     )
 
 def update_graph(graph_name, time_tabs_name, coin_tab_name, stat_name):
-
     df_ohlc = dh.get_data(coin_tab_name, time_tabs_name, limit = 1000)
     df_ohlc = df_ohlc.sort_values(by=['timestamp'])
     return create_ohlc(df_ohlc, graph_name, time_tabs_name, coin_tab_name, stat_name)
@@ -53,6 +54,30 @@ def update_graph(graph_name, time_tabs_name, coin_tab_name, stat_name):
 def update_data(n, symbol):
     df = dh.get_data(symbol,'1m', limit = 3)
     return create_market_change_indicator(df)
+
+@app.callback(Output('Topper','data'),
+              [Input('d-interval-component','n_intervals')])
+def update_topper(n):
+    df = dh
+    return topper_rank(df)
+
+@app.callback(Output('market_summary','data'),
+              [Input('d-interval-component','n_intervals')])
+def update_market_summary(n):
+    df = dh
+    return market_summary(df)
+
+@app.callback(Output('market_icon','children'),
+              [Input('d-interval-component','n_intervals')])
+def update_market_summary_icon(n):
+    df = dh
+    return market_summary_icons(df)
+
+@app.callback(Output('market_graph','figure'),
+              [Input('d-interval-component','n_intervals')])
+def update_market_summary_figure(n):
+    df = dh
+    return market_summary_figure(df)
 
 if __name__ == '__main__':
     app.run_server(debug=True)
