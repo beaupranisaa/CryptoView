@@ -451,8 +451,8 @@ def market_summary_figure(data):
     return fig
 
 coin_logo_title = html.Div(html.Img(id='coin-logo-title',src=app.get_asset_url('img/BTC.png'),
-        style={'height':'50px', 
-                'width':'50px',}),
+        style={'height':'40px', 
+                'width':'40px',}),
     style = {'height':'100%','display':'inline','paddingLeft':100 }
 )
 
