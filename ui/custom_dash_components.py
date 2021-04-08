@@ -440,3 +440,15 @@ def market_summary_figure(data):
     )
 
     return fig
+
+coin_name_title = html.H1(children = 'Bitcoin', id = 'coin-name-title',
+                style = {'textAlign': 'left', 
+                        'color': colors['text'], 
+                        'font-family': 'Helvetica', 
+                        'font-size': '36px',
+                        'fontWeight': 'bold',
+                        'paddingTop':20,
+                        'paddingBottom':20,
+                        'paddingLeft':30,
+                        'marginTop':0,
+                        'marginBottom':0}) 
