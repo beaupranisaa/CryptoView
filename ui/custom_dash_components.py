@@ -450,11 +450,11 @@ def market_summary_figure(data):
 
     return fig
 
-coin_logo_title = html.Img(id='coin-logo-title',src=app.get_asset_url('img/BTC.png'),
-    style={'height':'40px', 
-            'width':'40px',
-            'display':'inline',
-            'paddingLeft':60})
+coin_logo_title = html.Div(html.Img(id='coin-logo-title',src=app.get_asset_url('img/BTC.png'),
+        style={'height':'50px', 
+                'width':'50px',}),
+    style = {'height':'100%','display':'inline','paddingLeft':100 }
+)
 
 coin_name_title = html.Div(
     html.Div(children = [
@@ -467,7 +467,7 @@ coin_name_title = html.Div(
                         #'fontWeight': 'bold',
                         'paddingTop':20,
                         'paddingBottom':20,
-                        'paddingLeft':10,
+                        'paddingLeft':60,
                         'marginTop':0,
                         'marginBottom':0,
                         'display':'inline'
