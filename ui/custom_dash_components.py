@@ -37,10 +37,9 @@ title = html.H1(children = 'CryptoView',
                         'color': colors['text'], 
                         'font-family': 'Helvetica', 
                         'font-size': '96px',
+                        'display':'inline',
+                        'marginLeft':40,
                         'font-weight': 9000,
-                        'paddingTop':30,
-                        'paddingBottom':40,
-                        'paddingLeft':30,
                         'marginTop':0,
                         'marginBottom':0}) 
 
@@ -477,6 +476,19 @@ coin_name_title = html.Div(
     ),
     style = {'float':'left','height': 200,'display':'table'}
 )
+
+logo = html.Img(id='logo',src=app.get_asset_url('img/logo.png'),
+        style={'height':'120px','display':'inline-block'})
+
+layer_1 = html.Div(id = 'layer-1', children = [
+    logo, title
+],style = { 
+            'display':'flex',
+            'align-items':'center',
+            'paddingTop':30,
+            'paddingBottom':40,
+            'paddingLeft':30,
+})
 
 layer_3 = html.Div(id = 'layer-3', children = [
     coin_name_title, number_indicator
