@@ -12,10 +12,14 @@ import glob
 import random
 import base64
 import pandas as pd
+import dash
 
 from PIL import Image
 from io import BytesIO
 from IPython.display import HTML
+
+# Create the app
+app = dash.Dash()
 
 coins = ['Bitcoin','Ethereum', "Ripple", "Dogecoin", 'Tezos','Litecoin','EOS','Binance', 'BTC Cash']
 symbols = ["BTCUSDT", "ETHUSDT", "XRPUSDT", "DOGEUSDT", "XTZUSDT", "LTCUSDT", "EOSUSDT", "BNBUSDT", "BCHUSDT"]
@@ -446,7 +450,16 @@ def market_summary_figure(data):
 
     return fig
 
-coin_name_title = html.Div(html.Div(children = html.H1(children = 'Bitcoin', id = 'coin-name-title',
+coin_logo_title = html.Img(id='coin-logo-title',src=app.get_asset_url('img/BTC.png'),
+    style={'height':'40px', 
+            'width':'40px',
+            'display':'inline',
+            'paddingLeft':60})
+
+coin_name_title = html.Div(
+    html.Div(children = [
+        coin_logo_title, 
+        html.H1(children = 'Bitcoin', id = 'coin-name-title',
                 style = {'textAlign': 'left', 
                         'color': colors['text'], 
                         'font-family': 'Helvetica', 
@@ -454,15 +467,17 @@ coin_name_title = html.Div(html.Div(children = html.H1(children = 'Bitcoin', id 
                         #'fontWeight': 'bold',
                         'paddingTop':20,
                         'paddingBottom':20,
-                        'paddingLeft':100,
+                        'paddingLeft':10,
                         'marginTop':0,
                         'marginBottom':0,
+                        'display':'inline'
                         }),
+        ],
         style = {'vertical-align':'middle','display':'table-cell'}
     ),
     style = {'float':'left','height': 200,'display':'table'}
 )
 
-divv = html.Div(id = 'layer-3', children = [
+layer_3 = html.Div(id = 'layer-3', children = [
     coin_name_title, number_indicator
 ],style = {'display':'inline-block','width':'100%'})

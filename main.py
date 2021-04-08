@@ -22,15 +22,12 @@ dh = DataHandler()
 
 ###################### Layout ###########################
 
-# Create the app
-app = dash.Dash()
-
 app.layout = html.Div(style = {'backgroundColor': colors['background'], 
                                 'marginTop' : 0, 
                                 'marginBottom' : 0,
                                 'paddingTop' : 0,
                                 'paddingBottom': 0},
-                      children = [minute_interval, title, tabs, divv, timeframe_tabs, graph_tabs, 
+                      children = [minute_interval, title, tabs, layer_3, timeframe_tabs, graph_tabs, 
                       stat_choice, ohlc_graph,day_interval,toppers_table,market_summary_table, 
                       market_summary_icon, market_summary_graph ])
 
@@ -84,6 +81,10 @@ def update_market_summary_figure(n):
 def update_coin_name(symbol):
     return coin_names[symbol]
 
+@app.callback(Output('coin-logo-title', 'src'),
+               Input('coin-tabs', 'value'))
+def update_coin_logo(symbol):
+    return app.get_asset_url(f'img/{coin_imgs[symbol]}')
 
 if __name__ == '__main__':
     app.run_server(debug=True)
