@@ -32,10 +32,10 @@ title = html.H1(children = 'CryptoView',
                 style = {'textAlign': 'left', 
                         'color': colors['text'], 
                         'font-family': 'Helvetica', 
-                        'font-size': '76px',
+                        'font-size': '96px',
                         'font-weight': 9000,
-                        'paddingTop':10,
-                        'paddingBottom':20,
+                        'paddingTop':30,
+                        'paddingBottom':40,
                         'paddingLeft':30,
                         'marginTop':0,
                         'marginBottom':0}) 
@@ -58,8 +58,7 @@ number_indicator = dcc.Graph(id='num-indicator',
         figure={
         'layout': go.Layout(
             paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)', height =250,
-            width = 600)})
+            plot_bgcolor='rgba(0,0,0,0)', height =200)})
 
 def create_market_change_indicator(data):
     ''' 
@@ -447,20 +446,21 @@ def market_summary_figure(data):
 
     return fig
 
-coin_name_title = html.Div(children = html.H1(children = 'Bitcoin', id = 'coin-name-title',
+coin_name_title = html.Div(html.Div(children = html.H1(children = 'Bitcoin', id = 'coin-name-title',
                 style = {'textAlign': 'left', 
                         'color': colors['text'], 
                         'font-family': 'Helvetica', 
-                        'font-size': '48px',
-                        'fontWeight': 'bold',
+                        'font-size': '60px',
+                        #'fontWeight': 'bold',
                         'paddingTop':20,
                         'paddingBottom':20,
-                        'paddingLeft':30,
+                        'paddingLeft':100,
                         'marginTop':0,
                         'marginBottom':0,
                         }),
-        style = {'float':'left',
-        }
+        style = {'vertical-align':'middle','display':'table-cell'}
+    ),
+    style = {'float':'left','height': 200,'display':'table'}
 )
 
 divv = html.Div(id = 'layer-3', children = [
