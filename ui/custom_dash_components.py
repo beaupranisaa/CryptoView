@@ -54,12 +54,12 @@ tabs = dcc.Tabs(id = 'coin-tabs', value = symbols[0],
                 'paddingRight': "30px"})
 
 number_indicator = dcc.Graph(id='num-indicator', 
-        style = {'display': 'inline-block'},
+        style = {'float':'right','marginRight':'30px'},
         figure={
         'layout': go.Layout(
             paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
-            height = 300)})
+            plot_bgcolor='rgba(0,0,0,0)', height =250,
+            width = 600)})
 
 def create_market_change_indicator(data):
     ''' 
@@ -75,19 +75,25 @@ def create_market_change_indicator(data):
         mode = "number+delta",
         value = current_data['close'],
         domain = {'x': [0, 0.5], 'y': [0, 0]},
-        delta = {'reference': previous_data['close'], 'relative': True, 'position' : "bottom"}))
+        delta = {'reference': previous_data['close'], 'relative': True, 'position' : "bottom"},
+        number={"font":{"size":60}},
+        ))
     
     fig.add_trace(go.Indicator(
         title = 'Volume',
         mode = "number+delta",
         value = current_data['volume'],
         domain = {'x': [0.5, 1.0], 'y': [0, 0]},
-        delta = {'reference': previous_data['volume'], 'relative': True, 'position' : "bottom"}))
+        delta = {'reference': previous_data['volume'], 'relative': True, 'position' : "bottom"},
+        number={"font":{"size":60}},
+        ))
     
     fig.update_layout(
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        font = {'color': colors['text'],'family': "Helvetica"})
+        font = {'color': colors['text'],'family': "Helvetica"},
+        )
+
     return fig
 
 minute_interval = dcc.Interval(
@@ -441,14 +447,22 @@ def market_summary_figure(data):
 
     return fig
 
-coin_name_title = html.H1(children = 'Bitcoin', id = 'coin-name-title',
+coin_name_title = html.Div(children = html.H1(children = 'Bitcoin', id = 'coin-name-title',
                 style = {'textAlign': 'left', 
                         'color': colors['text'], 
                         'font-family': 'Helvetica', 
-                        'font-size': '36px',
+                        'font-size': '48px',
                         'fontWeight': 'bold',
                         'paddingTop':20,
                         'paddingBottom':20,
                         'paddingLeft':30,
                         'marginTop':0,
-                        'marginBottom':0}) 
+                        'marginBottom':0,
+                        }),
+        style = {'float':'left',
+        }
+)
+
+divv = html.Div(id = 'layer-3', children = [
+    coin_name_title, number_indicator
+],style = {'display':'inline-block','width':'100%'})
