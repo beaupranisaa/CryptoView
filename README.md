@@ -31,3 +31,26 @@ python main.py
 ```
 
 
+<<<<<<< HEAD
+=======
+Sam: Just trying hihihihi
+=======
+
+## TODO:
+
+OHLC:
+
+[ ] Zooming thing works
+[ ] Canvas for drawing
+[ ] Remove date-time for one of the graphs
+[ ] Scaling of volume and MACD
+[ ] Fix 5 mins
+[ ] Beautiful tabs
+
+Market Summary:
+
+[ ] Putting them in a row.
+[ ] Put the word market summary
+[ ] Color correction
+[ ] Remove zoom/panning functions
+>>>>>>> 23b34be43530a9ca48cdde38964714e919a09fd5
