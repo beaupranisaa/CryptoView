@@ -4,6 +4,7 @@ Created on Fri Feb 19 12:36:41 2021
 @author: Romen Samuel Wabina
 """
 import dash
+import json
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
@@ -27,9 +28,9 @@ app.layout = html.Div(style = {'backgroundColor': colors['background'],
                                 'marginBottom' : 0,
                                 'paddingTop' : 0,
                                 'paddingBottom': 0},
-                      children = [minute_interval, layer_1, tabs, layer_3, timeframe_tabs, graph_tabs, 
+                      children = [minute_interval, layer_1, tabs, layer_3, some_text,timeframe_tabs, graph_tabs, 
                       stat_choice, ohlc_graph,day_interval,toppers_table,market_summary_table, 
-                      market_summary_icon, market_summary_graph ])
+                      market_summary_icon, market_summary_graph])
 
 @app.callback(
     Output('ohlc', 'figure'),
@@ -40,7 +41,7 @@ app.layout = html.Div(style = {'backgroundColor': colors['background'],
     )
 
 def update_graph(graph_name, time_tabs_name, coin_tab_name, stat_name):
-    df_ohlc = dh.get_data(coin_tab_name, time_tabs_name, limit = 1000)
+    df_ohlc = dh.get_data(coin_tab_name, time_tabs_name, limit = 100)
     df_ohlc = df_ohlc.sort_values(by=['timestamp'])
     return create_ohlc(df_ohlc, graph_name, time_tabs_name, coin_tab_name, stat_name)
 
@@ -85,6 +86,31 @@ def update_coin_name(symbol):
                Input('coin-tabs', 'value'))
 def update_coin_logo(symbol):
     return app.get_asset_url(f'img/{coin_imgs[symbol]}')
+
+@app.callback(
+    Output('some-text', 'children'),
+    [
+        Input('ohlc', 'relayoutData'),
+        Input('time_tabs','value')
+    ])
+def display_relayout_data(relayoutData, timeframe):
+    if relayoutData == None:
+        return "null"
+    
+    string =  json.dumps(relayoutData, indent=2)
+    string = string + '  ' + str(timeframe)
+
+    try:
+        try:
+            x_range = relayoutData["xaxis.autorange"]
+        except:
+            x_range = [relayoutData['xaxis.range[0]'], relayoutData['xaxis.range[1]']]
+    except:
+        x_range = None
+
+    print(x_range)
+
+    return string
 
 if __name__ == '__main__':
     app.run_server(debug=True)

@@ -493,3 +493,14 @@ layer_1 = html.Div(id = 'layer-1', children = [
 layer_3 = html.Div(id = 'layer-3', children = [
     coin_name_title, number_indicator
 ],style = {'display':'inline-block','width':'100%'})
+
+some_text = html.H3(id = 'some-text',children = 'hi', 
+                style = {'textAlign': 'left', 
+                        'color': colors['text'], 
+                        'font-family': 'Helvetica', 
+                        'font-size': '24px',
+                        'display':'inline',
+                        'marginLeft':40,
+                        'font-weight': 9000,
+                        'marginTop':0,
+                        'marginBottom':0}) 
