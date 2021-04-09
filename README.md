@@ -33,16 +33,16 @@ python main.py
 
 OHLC:
 
-1. Zooming thing works
-2. Canvas for drawing
-3. Remove date-time for one of the graphs
-4. Scaling of volume and MACD
-5. Fix 5 mins
-6. Beautiful tabs
+[ ] Zooming thing works
+[ ] Canvas for drawing
+[ ] Remove date-time for one of the graphs
+[ ] Scaling of volume and MACD
+[ ] Fix 5 mins
+[ ] Beautiful tabs
 
 Market Summary:
 
-1. Putting them in a row.
-2. Put the word market summary
-3. Color correction
-4. Remove zoom/panning functions
+[ ] Putting them in a row.
+[ ] Put the word market summary
+[ ] Color correction
+[ ] Remove zoom/panning functions
