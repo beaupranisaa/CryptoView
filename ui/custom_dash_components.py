@@ -457,14 +457,14 @@ market_summary_graph = dcc.Graph(id='market_graph',
 
 def create_ohlc(df_ohlc, graph_name, time_tabs_name, coin_tab_name, stat_name):
     timestamp_dict = {  '1m': df_ohlc.index.strftime("%H:%M"),
-                        '5m':df_ohlc.index.strftime("%H:%M"),
+                        '5m':df_ohlc.index.strftime("%H:%M %d/%m/%Y"),
                         '1h':df_ohlc.index.strftime("%H:%M %d/%m/%Y"),
                         '1d':df_ohlc.index.strftime("%d/%m/%Y")}
                 
     x_data = timestamp_dict[time_tabs_name]
 
     if graph_name == 'Candlestick':
-        fig = make_subplots(rows=2, cols=1, row_heights=[0.8, 0.2], vertical_spacing=0) 
+        fig = make_subplots(rows=2, cols=1, row_heights=[0.8, 0.2], vertical_spacing=0, shared_xaxes=True) 
 
         fig.add_trace(go.Candlestick(x=x_data,open=df_ohlc['open'], high=df_ohlc['high'], low=df_ohlc['low'], close=df_ohlc['close'],
                                 increasing_line_color='#2FB835', decreasing_line_color='#FF3535', name='candlestick'), row=1, col=1)
@@ -476,52 +476,96 @@ def create_ohlc(df_ohlc, graph_name, time_tabs_name, coin_tab_name, stat_name):
                 )
 
     else :
-        fig = make_subplots(rows=2, cols=1, shared_xaxes=True,vertical_spacing=0.009,horizontal_spacing=0.009, row_heights=[0.7, 0.3])
+        fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.009, horizontal_spacing=0.009, row_heights=[0.8, 0.2])
 
-        fig.add_trace(go.Scatter(x = x_data, y = df_ohlc['close'], mode = 'lines',
+        fig.add_trace(go.Scatter(x = x_data, y = df_ohlc['close'], mode = 'lines', yaxis="y1", xaxis="x1",
             name='Close Price',
             connectgaps=True, marker = dict(color='rgb(255, 255, 0)')),row=1, col=1)
 
-        fig.add_trace(go.Scatter(x = x_data, y = df_ohlc['open'], mode = 'lines',
+        fig.add_trace(go.Scatter(x = x_data, y = df_ohlc['open'], mode = 'lines', yaxis="y1", xaxis="x1",
             name='Open Price',
             connectgaps=True, marker = dict(color = 'rgb(0, 0, 255)')),row=1, col=1)
         
-        fig.add_trace(go.Scatter(x = x_data, y = df_ohlc['high'], mode = 'lines',
+        fig.add_trace(go.Scatter(x = x_data, y = df_ohlc['high'], mode = 'lines', yaxis="y1", xaxis="x1",
             name='Highest',
             connectgaps=True, marker = dict(color='rgb(225, 0, 0)')),row=1, col=1)
         
-        fig.add_trace(go.Scatter(x = x_data, y = df_ohlc['low'], mode = 'lines',
+        fig.add_trace(go.Scatter(x = x_data, y = df_ohlc['low'], mode = 'lines', yaxis="y1", xaxis="x1",
             connectgaps=True, marker = dict(color='rgb(0, 255, 0)')),row=1, col=1)
 
-        fig.update_layout(
-                        paper_bgcolor='rgba(0,0,0,0)',
-                        plot_bgcolor='rgba(0,0,0,0)',
-                        font = {'color': colors['text'],'family': "Helvetica"},
-                )
+    fig.update_layout(
+        yaxis=dict(
+        title="USD",
+        titlefont=dict(
+            color="#FFFFFF"
+        ),
+        tickfont=dict(
+            color="#FFFFFF"
+        ),
+        layer="above traces",
+        anchor="free",
+        side="left",
+        position=0),
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font = {'color': colors['text'],'family': "Helvetica"})
 
     if 'MACD' in stat_name:
         macd_data = ta.trend.macd(df_ohlc['close'])
-        fig.add_trace(go.Scatter(x = x_data, y = macd_data, mode = 'lines',
+        fig.add_trace(go.Scatter(x = x_data, y = macd_data, mode = 'lines', yaxis="y2", xaxis="x2",
             name='MACD',
             connectgaps=True, marker = dict(color='#6FE9FF')), row=2, col=1)
+        fig.update_layout(
+            yaxis2=dict(
+            title="MACD",
+            titlefont=dict(
+                color="#6FE9FF"),
+            tickfont=dict(
+                color="#6FE9FF"),
+            layer="below traces",
+            anchor="x",
+            overlaying="y2",
+            side="left")
+            )
+        
 
     if 'Market Volume' in stat_name:
-        fig.add_trace(go.Bar(x = x_data, y = df_ohlc['volume'],
+        fig.add_trace(go.Bar(x = x_data, y = df_ohlc['volume'], yaxis="y3", xaxis="x2",
             name='Market Volume', marker = dict(color='#FF84E3')), row=2, col=1)
-    
-    fig.update_xaxes(showgrid=False, zeroline=False, rangeslider_visible=False, showticklabels=True,
-                showspikes=True, spikemode='across', spikesnap='cursor', showline=False,
-                spikecolor="rgb(10, 10, 10)",spikethickness=0.3, spikedash='solid')
+        fig.update_layout(
+            yaxis3=dict(
+            title="Market Volume",
+            titlefont=dict(
+                color="#FF84E3"),
+            tickfont=dict(
+                color="#FF84E3"),
+            layer="below traces",
+            anchor="x",
+            overlaying="y3",
+            side="right")
+            )
+    print(stat_name)
+    fig.update_xaxes(
+            showgrid=False, zeroline=False, rangeslider_visible=False,
+            showspikes=True, spikemode='across', spikesnap='cursor', showline=True,
+            spikecolor="rgb(10, 10, 10)",spikethickness=0.3, spikedash='solid')
 
-    fig.update_yaxes(showspikes=True, spikedash='solid',spikemode='across', 
-                    spikecolor="rgb(10, 10, 10)",spikesnap="cursor",spikethickness=0.3)
+    fig.update_yaxes(showspikes=True, spikedash='solid',spikemode='across', showticklabels=True,
+                    spikecolor="rgb(10, 10, 10)",spikesnap="cursor",spikethickness=0.3, )
 
-    fig.update_layout(
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)',
-        hovermode='closest',
-        font = {'color': colors['text'],'family': "Helvetica"},
-)
+    if ('Market Volume' not in stat_name and 'MACD' not in stat_name):
+        fig.update_layout(
+        xaxis=dict(showticklabels=True),
+        xaxis2=dict(showticklabels=False))
+    else:
+        fig.update_layout(
+            xaxis=dict(showticklabels=False),
+            xaxis2=dict(showticklabels=True),
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            hovermode='closest',
+            font = {'color': colors['text'],'family': "Helvetica"})
+
     return fig
 
 storage_component = html.Div(id='intermediate-value', style={'display': 'none'}) 
