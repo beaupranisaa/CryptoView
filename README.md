@@ -31,5 +31,3 @@ python main.py
 ```
 
 
-
-Sam: Just trying hihihihi
