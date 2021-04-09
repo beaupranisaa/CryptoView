@@ -7,7 +7,7 @@ import dash
 import json
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 import plotly.graph_objs as go
 import analytics.analytics as analytics
 from ta import add_all_ta_features
@@ -94,27 +94,19 @@ def update_coin_logo(symbol):
 @app.callback(
     Output('some-text', 'children'),
     [
-        Input('ohlc', 'relayoutData'),
-        Input('time_tabs','value')
+        Input('time_tabs','value'),
+        Input('ohlc','relayoutData')
+    ],
+    [
+        State('ohlc', 'figure')
     ])
-def display_relayout_data(relayoutData, timeframe):
-    if relayoutData == None:
-        return "null"
-    
-    string =  json.dumps(relayoutData, indent=2)
-    string = string + '  ' + str(timeframe)
+def display_relayout_data(timeframe, relayoutdata, state):
+    #print(relayoutdata)
+    x_range = state['layout']['xaxis']['range']
+    print("x_range:",x_range)
 
-    try:
-        try:
-            x_range = relayoutData["xaxis.autorange"]
-        except:
-            x_range = [relayoutData['xaxis.range[0]'], relayoutData['xaxis.range[1]']]
-    except:
-        x_range = None
+    return str(x_range)
 
-    print(x_range)
-
-    return string
 
 @app.callback(Output('rsi-gauge', 'figure'),
              [Input('interval-component', 'n_intervals'),

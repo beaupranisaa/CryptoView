@@ -544,7 +544,6 @@ def create_ohlc(df_ohlc, graph_name, time_tabs_name, coin_tab_name, stat_name):
             overlaying="y3",
             side="right")
             )
-    print(stat_name)
     fig.update_xaxes(
             showgrid=False, zeroline=False, rangeslider_visible=False,
             showspikes=True, spikemode='across', spikesnap='cursor', showline=True,
