@@ -42,9 +42,13 @@ app.layout = html.Div(style = {'backgroundColor': colors['background'],
     Input('time_tabs', 'value'),
     Input('coin-tabs', 'value'),
     Input('macdmarket','value'),
+    Input('ohlc','relayoutData'),
+    State('ohlc', 'figure'),
     )
 
-def update_graph(graph_name, time_tabs_name, coin_tab_name, stat_name):
+def update_graph(graph_name, time_tabs_name, coin_tab_name, stat_name, relayout_data, state):
+    x_range = state['layout']['xaxis']['range']
+    print(x_range)
     df_ohlc = dh.get_data(coin_tab_name, time_tabs_name, limit = 100)
     df_ohlc = df_ohlc.sort_values(by=['timestamp'])
     return create_ohlc(df_ohlc, graph_name, time_tabs_name, coin_tab_name, stat_name)
@@ -91,21 +95,20 @@ def update_coin_name(symbol):
 def update_coin_logo(symbol):
     return app.get_asset_url(f'img/{coin_imgs[symbol]}')
 
-@app.callback(
-    Output('some-text', 'children'),
-    [
-        Input('time_tabs','value'),
-        Input('ohlc','relayoutData')
-    ],
-    [
-        State('ohlc', 'figure')
-    ])
-def display_relayout_data(timeframe, relayoutdata, state):
-    #print(relayoutdata)
-    x_range = state['layout']['xaxis']['range']
-    print("x_range:",x_range)
-
-    return str(x_range)
+#@app.callback(
+#    Output('some-text', 'children'),
+#    [
+#        Input('time_tabs','value'),
+#        Input('ohlc','relayoutData')
+#    ],
+#    [
+#        State('ohlc', 'figure')
+#    ])
+#def display_relayout_data(timeframe, relayoutdata, state):
+#    x_range = state['layout']['xaxis']['range']
+#    print("x_range:",x_range)
+#
+#    return str(x_range)
 
 
 @app.callback(Output('rsi-gauge', 'figure'),
