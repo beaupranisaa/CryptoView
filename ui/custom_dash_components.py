@@ -4,6 +4,7 @@ import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 import data_handler
 from datetime import datetime
+import analytics.analytics as analytics
 import ta
 import dash_table
 import pandas as pd
@@ -190,6 +191,180 @@ stat_choice = dcc.Checklist(
                 'display': 'inline-block',
                 'vertical-align': 'top',
                 "horizontalAlign": "center"})
+
+title_indicators = html.H6 (children = 'Technical Indicators', 
+                style = {'textAlign': 'center', 
+                        'color': colors['text'], 
+                        'font-family': 'Helvetica', 
+                        'font-size': '25px',
+                        'font-weight': 9000,
+                        'paddingTop':10,
+                        'paddingBottom':0,
+                        'paddingLeft':30,
+                        'marginTop':0,
+                        'marginBottom':0})
+
+gauge_indicator = dcc.Graph(id ='rsi-gauge',
+        style = {'width': '100%',
+                 'display': 'inline-block'},
+        figure = {
+            'layout': go.Layout(
+                paper_bgcolor = 'rgba(0,0,0,0)',
+                plot_bgcolor = 'rgba(0,0,0,0)',
+                height = 350)})
+
+def normalize_indicator(data):
+    scaler = preprocessing.MinMaxScaler()
+    normalized_data = scaler.fit_transform(data)
+    return normalized_data
+
+def create_gauge_rsi_indicator(data):
+    current_data = data.iloc[5, :] #Change it to 1
+    previous_data = data.iloc[2, :] 
+
+    fig = go.Figure(go.Indicator(
+        domain = {'x': [0, 0.3], 'y': [0, 0]},
+        value = current_data['momentum_rsi'],
+        mode = 'gauge+number+delta',
+        title = {'text': "Relative Strength Index"},
+        delta = {'reference': previous_data['momentum_rsi']},
+        gauge = {'axis': {'range': [0, 100]},
+        'steps' : [
+            {'range': [0, 20], 'color': "lightgray"},
+            {'range': [80, 100], 'color': 'darkred'}],
+            'threshold' : {'line': {'color': "orange", 'width': 4}, 'thickness': 0.75, 'value': current_data['momentum_rsi']}}))
+    
+    fig.add_trace(go.Indicator(
+        domain = {'x': [0.32, 0.7], 'y': [0, 0]},
+        value = current_data['trend_cci'],
+        mode = 'gauge+number+delta',
+        title = {'text': 'Commodity Channel Index'},
+        delta = {'reference': previous_data['trend_cci']},
+        gauge = {'axis': {'range': [-200, 200]},
+        'steps' : [
+            {'range': [-200, -150], 'color': 'white'},
+            {'range': [-150, -100], 'color': 'lightgray'},
+            {'range': [100, 150], 'color': 'firebrick'},
+            {'range': [150, 200], 'color': 'darkred'}],
+            'threshold': {'line': {'color': 'orange', 'width': 4}, 'thickness': 0.75, 'value': current_data['trend_cci']}}))
+
+    fig.add_trace(go.Indicator(
+        domain = {'x': [0.75, 1], 'y': [0, 0]},
+        value = current_data['momentum_kama'],
+        mode = 'gauge+number+delta',
+        title = {'text': 'Moving Averages'},
+        delta = {'reference': previous_data['momentum_kama']},
+        gauge = {'axis': {'range': [None, data['close'].max()]},
+        'steps' : [
+            {'range': [0, 0.25*data['close'].max()], 'color': 'lightgray'},
+            {'range': [0.75*data['close'].max(), data['close'].max()], 'color': 'darkred'}],
+            'threshold': {'line': {'color': 'yellow', 'width': 4}, 'thickness': 0.75, 'value': current_data['momentum_kama']}}))
+
+    fig.update_layout( 
+        paper_bgcolor = colors['background'],
+        plot_bgcolor = colors['background'],
+        font = {'color': colors['text'], 'family': "Helvetica"})
+    return fig
+     
+
+title_summary = html.H6(children = 'Summary', 
+                style = {'textAlign': 'center', 
+                        'color': colors['text'], 
+                        'font-family': 'Helvetica', 
+                        'font-size': '25px',
+                        'paddingTop': 0,
+                        'paddingBottom':0,
+                        'paddingLeft':30,
+                        'marginTop':0,
+                        'marginBottom':0}) 
+
+bullet_graph = dcc.Graph(id = 'bullet-indicator',
+        style = {'width': '100%',
+                 'paddingBottom': 0,
+                 'paddingTop' : 0,
+                 'marginTop': 0,
+                 'marginBottom':0},
+        figure = {
+            'layout': go.Layout(
+                paper_bgcolor = 'rgba(0,0,0,0)',
+                plot_bgcolor = 'rgba(0,0,0,0)',
+                height = 250)})
+
+def create_bullet_graph(data):
+    norm_data = analytics.normalize_indicator(data)
+    current_data = norm_data[0, :]
+    previous_data = norm_data[1, :]
+
+    fig = go.Figure(go.Indicator(
+        mode = 'number+gauge+delta',
+        gauge = {'shape': 'bullet',
+                 'axis' : {'range' : [0, 1]},
+                 'threshold' : {
+                     'line' : {'color': 'yellow', 'width': 3},
+                     'thickness' : 0.75,
+                     'value' : current_data[4]},
+                 'steps': [
+                     {'range' : [0, 0.4], 'color': 'lightgray'},
+                     {'range' : [0.8, 1], 'color': 'firebrick'}]},
+        value = current_data[4],
+        delta = {'reference': previous_data[4]},
+        domain = {'x': [1, 0], 'y': [0, 0]}))
+    
+    fig.update_layout(
+        paper_bgcolor = colors['background'],
+        plot_bgcolor = colors['background'],
+        font = {'color': colors['text'], 'family': 'Helvetica'})
+    return fig
+
+day_interval = dcc.Interval(
+        id='d-interval-component',
+        interval=60*60*60*1000,
+        n_intervals=0)
+
+indicators = ["trend_cci", "trend_cci", "trend_macd_signal"]
+indicators_col_name = ["Indicators","Value", "Signal"]
+
+
+techindicator_summary = dash_table.DataTable(
+    id = 'indicators-table',
+    columns = [{"name" : indicators_col_name[i], "id":col, 
+        "type": "numeric",} for i,col in enumerate(indicators)],
+    editable = True,
+    style_header = {'background_color': colors['background'],
+                    'font-family': 'Helvetica',
+                    'font-size': '120%',
+                    'fontWeight': 'bold',
+                    'textAlign': 'center',
+                    'marginTop': 0,
+                    'color': colors['text'],
+                    'marginBottom': 0,
+                    'border': '0px',
+                    'textAlign': 'center',
+                    'paddingRight':20,
+                    'paddingLeft': 50,
+                    'paddingBottom': 10},
+    style_table = {'width': '10px',
+                   'paddingLeft': 50,
+                   'paddingBottom': 20},
+    style_cell = {'minWidt': 100, 
+                  'width': 110,
+                  'maxWidt': 300,
+                  'font-family': 'Helvetica',
+                  'backgroundColor': 'firebrick',
+                  'color': colors['text'],
+                  'textAlign': 'center'},
+    style_data = {'border': '5px solid #000022'})
+
+def indicators_table(data):
+    # data = np.transpose(data)
+    # data = data[data.columns[0]]
+    # data = data.to_dict('records')
+    data = data[['trend_cci', 'momentum_stoch_rsi', 'trend_macd_signal']]
+    # data = np.transpose(data).iloc[:, 0]
+    data = np.transpose(data.to_dict('records'))[0:5]
+    #data = list(data.to_dict('index').values())[0:5]
+    return data
+
 
 
 toppers = ["gainer","gainer_perc", "loser","loser_perc"]

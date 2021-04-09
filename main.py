@@ -9,7 +9,9 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 import plotly.graph_objs as go
 import analytics.analytics as analytics
-from ta import add_all_ta_features 
+from ta import add_all_ta_features
+from ta.utils import dropna
+from sklearn import preprocessing 
 from datetime import datetime, timedelta
 
 from data_handler.data_handler import DataHandler
@@ -28,7 +30,9 @@ app.layout = html.Div(style = {'backgroundColor': colors['background'],
                                 'paddingTop' : 0,
                                 'paddingBottom': 0},
                       children = [minute_interval, layer_1, tabs, layer_3, timeframe_tabs, graph_tabs, 
-                      stat_choice, ohlc_graph,day_interval,toppers_table,market_summary_table, 
+                      stat_choice, ohlc_graph,day_interval, title_indicators, gauge_indicator, 
+                      title_summary, bullet_graph, techindicator_summary, 
+                      toppers_table,market_summary_table, 
                       market_summary_icon, market_summary_graph ])
 
 @app.callback(
@@ -85,6 +89,36 @@ def update_coin_name(symbol):
                Input('coin-tabs', 'value'))
 def update_coin_logo(symbol):
     return app.get_asset_url(f'img/{coin_imgs[symbol]}')
+
+@app.callback(Output('rsi-gauge', 'figure'),
+             [Input('interval-component', 'n_intervals'),
+              Input('coin-tabs', 'value')])
+              
+def update_rsi(time_tabs_name, coin_tab_name):
+    df = dh.get_data(coin_tab_name, '1d', limit = 1000)
+    df = add_all_ta_features(df, open="open", high = "high", low = "low", close = "close", 
+                                volume = "volume", fillna = True)
+    #norm_df = analytics.normalize_indicator(df)
+    return create_gauge_rsi_indicator(df)
+
+@app.callback(Output('bullet-indicator', 'figure'),
+             [Input('interval-component', 'n_intervals'),
+              Input('coin-tabs', 'value')])
+
+def update_bullet(time_tabs_name, coin_tab_name):
+    df = dh.get_data(coin_tab_name,'1d', limit = 1000)
+    df = add_all_ta_features(df, open = "open", high = "high", low = "low", close = "close", volume = "volume", fillna = True)
+    df = df[['close', 'open', 'high', 'low', 'momentum_kama', 'momentum_rsi', 'trend_cci']]  
+    return create_bullet_graph(df)
+
+@app.callback(Output('indicators-table', 'data'),
+             [Input('interval-component', 'n_intervals'),
+              Input('coin-tabs', 'value')])
+
+def update_indicator_table(n, coin_tab_name):
+    df = dh.get_data(coin_tab_name, '1d', limit = 1000)
+    df = add_all_ta_features(df, open = "open", high = "high", low = "low", close = "close", volume = "volume", fillna = True)
+    return indicators_table(df)
 
 if __name__ == '__main__':
     app.run_server(debug=True)
