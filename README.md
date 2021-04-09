@@ -29,6 +29,11 @@ python -m data_handler.database_updater
 ```console
 python main.py
 ```
+
+
+Sam: Just trying hihihihi
+=======
+
 ## TODO:
 
 OHLC:
