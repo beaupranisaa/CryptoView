@@ -30,10 +30,6 @@ python -m data_handler.database_updater
 python main.py
 ```
 
-
-Sam: Just trying hihihihi
-=======
-
 ## TODO:
 
 OHLC:
@@ -47,7 +43,7 @@ OHLC:
 
 Market Summary:
 
-- [ ] Putting them in a row.
-- [ ] Put the word market summary
-- [ ] Color correction
-- [ ] Remove zoom/panning functions
+[ ] Putting them in a row.
+[ ] Put the word market summary
+[ ] Color correction
+[ ] Remove zoom/panning functions

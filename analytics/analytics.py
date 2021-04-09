@@ -8,6 +8,12 @@ import numpy as np
 import pandas as pd
 from ta import add_all_ta_features
 from ta.utils import dropna
+from sklearn import preprocessing
+
+def normalize_indicator(data):
+    scaler = preprocessing.MinMaxScaler()
+    normalized_data = scaler.fit_transform(data)
+    return normalized_data
 
 def moving_averages(df):
     sma_fast = df['trend_sma_fast']

@@ -9,7 +9,7 @@ from data_handler.get_binance import get_all_binance
 
 class DataHandler:
     def __init__(self):
-        cluster = Cluster(['puffer.cs.ait.ac.th'])
+        cluster = Cluster(['127.0.0.1'])
         self.session = cluster.connect()
         try:
             self.session.execute('USE cryptoview')

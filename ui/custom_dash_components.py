@@ -4,6 +4,7 @@ import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 import data_handler
 from datetime import datetime
+import analytics.analytics as analytics
 import ta
 import dash_table
 import pandas as pd
@@ -191,6 +192,180 @@ stat_choice = dcc.Checklist(
                 'vertical-align': 'top',
                 "horizontalAlign": "center"})
 
+title_indicators = html.H6 (children = 'Technical Indicators', 
+                style = {'textAlign': 'center', 
+                        'color': colors['text'], 
+                        'font-family': 'Helvetica', 
+                        'font-size': '25px',
+                        'font-weight': 9000,
+                        'paddingTop':10,
+                        'paddingBottom':0,
+                        'paddingLeft':30,
+                        'marginTop':0,
+                        'marginBottom':0})
+
+gauge_indicator = dcc.Graph(id ='rsi-gauge',
+        style = {'width': '100%',
+                 'display': 'inline-block'},
+        figure = {
+            'layout': go.Layout(
+                paper_bgcolor = 'rgba(0,0,0,0)',
+                plot_bgcolor = 'rgba(0,0,0,0)',
+                height = 350)})
+
+def normalize_indicator(data):
+    scaler = preprocessing.MinMaxScaler()
+    normalized_data = scaler.fit_transform(data)
+    return normalized_data
+
+def create_gauge_rsi_indicator(data):
+    current_data = data.iloc[5, :] #Change it to 1
+    previous_data = data.iloc[2, :] 
+
+    fig = go.Figure(go.Indicator(
+        domain = {'x': [0, 0.3], 'y': [0, 0]},
+        value = current_data['momentum_rsi'],
+        mode = 'gauge+number+delta',
+        title = {'text': "Relative Strength Index"},
+        delta = {'reference': previous_data['momentum_rsi']},
+        gauge = {'axis': {'range': [0, 100]},
+        'steps' : [
+            {'range': [0, 20], 'color': "lightgray"},
+            {'range': [80, 100], 'color': 'darkred'}],
+            'threshold' : {'line': {'color': "orange", 'width': 4}, 'thickness': 0.75, 'value': current_data['momentum_rsi']}}))
+    
+    fig.add_trace(go.Indicator(
+        domain = {'x': [0.32, 0.7], 'y': [0, 0]},
+        value = current_data['trend_cci'],
+        mode = 'gauge+number+delta',
+        title = {'text': 'Commodity Channel Index'},
+        delta = {'reference': previous_data['trend_cci']},
+        gauge = {'axis': {'range': [-200, 200]},
+        'steps' : [
+            {'range': [-200, -150], 'color': 'white'},
+            {'range': [-150, -100], 'color': 'lightgray'},
+            {'range': [100, 150], 'color': 'firebrick'},
+            {'range': [150, 200], 'color': 'darkred'}],
+            'threshold': {'line': {'color': 'orange', 'width': 4}, 'thickness': 0.75, 'value': current_data['trend_cci']}}))
+
+    fig.add_trace(go.Indicator(
+        domain = {'x': [0.75, 1], 'y': [0, 0]},
+        value = current_data['momentum_kama'],
+        mode = 'gauge+number+delta',
+        title = {'text': 'Moving Averages'},
+        delta = {'reference': previous_data['momentum_kama']},
+        gauge = {'axis': {'range': [None, data['close'].max()]},
+        'steps' : [
+            {'range': [0, 0.25*data['close'].max()], 'color': 'lightgray'},
+            {'range': [0.75*data['close'].max(), data['close'].max()], 'color': 'darkred'}],
+            'threshold': {'line': {'color': 'yellow', 'width': 4}, 'thickness': 0.75, 'value': current_data['momentum_kama']}}))
+
+    fig.update_layout( 
+        paper_bgcolor = colors['background'],
+        plot_bgcolor = colors['background'],
+        font = {'color': colors['text'], 'family': "Helvetica"})
+    return fig
+     
+
+title_summary = html.H6(children = 'Summary', 
+                style = {'textAlign': 'center', 
+                        'color': colors['text'], 
+                        'font-family': 'Helvetica', 
+                        'font-size': '25px',
+                        'paddingTop': 0,
+                        'paddingBottom':0,
+                        'paddingLeft':30,
+                        'marginTop':0,
+                        'marginBottom':0}) 
+
+bullet_graph = dcc.Graph(id = 'bullet-indicator',
+        style = {'width': '100%',
+                 'paddingBottom': 0,
+                 'paddingTop' : 0,
+                 'marginTop': 0,
+                 'marginBottom':0},
+        figure = {
+            'layout': go.Layout(
+                paper_bgcolor = 'rgba(0,0,0,0)',
+                plot_bgcolor = 'rgba(0,0,0,0)',
+                height = 250)})
+
+def create_bullet_graph(data):
+    norm_data = analytics.normalize_indicator(data)
+    current_data = norm_data[0, :]
+    previous_data = norm_data[1, :]
+
+    fig = go.Figure(go.Indicator(
+        mode = 'number+gauge+delta',
+        gauge = {'shape': 'bullet',
+                 'axis' : {'range' : [0, 1]},
+                 'threshold' : {
+                     'line' : {'color': 'yellow', 'width': 3},
+                     'thickness' : 0.75,
+                     'value' : current_data[4]},
+                 'steps': [
+                     {'range' : [0, 0.4], 'color': 'lightgray'},
+                     {'range' : [0.8, 1], 'color': 'firebrick'}]},
+        value = current_data[4],
+        delta = {'reference': previous_data[4]},
+        domain = {'x': [1, 0], 'y': [0, 0]}))
+    
+    fig.update_layout(
+        paper_bgcolor = colors['background'],
+        plot_bgcolor = colors['background'],
+        font = {'color': colors['text'], 'family': 'Helvetica'})
+    return fig
+
+day_interval = dcc.Interval(
+        id='d-interval-component',
+        interval=60*60*60*1000,
+        n_intervals=0)
+
+indicators = ["trend_cci", "trend_cci", "trend_macd_signal"]
+indicators_col_name = ["Indicators","Value", "Signal"]
+
+
+techindicator_summary = dash_table.DataTable(
+    id = 'indicators-table',
+    columns = [{"name" : indicators_col_name[i], "id":col, 
+        "type": "numeric",} for i,col in enumerate(indicators)],
+    editable = True,
+    style_header = {'background_color': colors['background'],
+                    'font-family': 'Helvetica',
+                    'font-size': '120%',
+                    'fontWeight': 'bold',
+                    'textAlign': 'center',
+                    'marginTop': 0,
+                    'color': colors['text'],
+                    'marginBottom': 0,
+                    'border': '0px',
+                    'textAlign': 'center',
+                    'paddingRight':20,
+                    'paddingLeft': 50,
+                    'paddingBottom': 10},
+    style_table = {'width': '10px',
+                   'paddingLeft': 50,
+                   'paddingBottom': 20},
+    style_cell = {'minWidt': 100, 
+                  'width': 110,
+                  'maxWidt': 300,
+                  'font-family': 'Helvetica',
+                  'backgroundColor': 'firebrick',
+                  'color': colors['text'],
+                  'textAlign': 'center'},
+    style_data = {'border': '5px solid #000022'})
+
+def indicators_table(data):
+    # data = np.transpose(data)
+    # data = data[data.columns[0]]
+    # data = data.to_dict('records')
+    data = data[['trend_cci', 'momentum_stoch_rsi', 'trend_macd_signal']]
+    # data = np.transpose(data).iloc[:, 0]
+    data = np.transpose(data.to_dict('records'))[0:5]
+    #data = list(data.to_dict('index').values())[0:5]
+    return data
+
+
 
 toppers = ["gainer","gainer_perc", "loser","loser_perc"]
 col_name = ["24h GAINER","","24h LOSER",""]
@@ -282,14 +457,14 @@ market_summary_graph = dcc.Graph(id='market_graph',
 
 def create_ohlc(df_ohlc, graph_name, time_tabs_name, coin_tab_name, stat_name):
     timestamp_dict = {  '1m': df_ohlc.index.strftime("%H:%M"),
-                        '5m':df_ohlc.index.strftime("%H:%M"),
+                        '5m':df_ohlc.index.strftime("%H:%M %d/%m/%Y"),
                         '1h':df_ohlc.index.strftime("%H:%M %d/%m/%Y"),
                         '1d':df_ohlc.index.strftime("%d/%m/%Y")}
                 
     x_data = timestamp_dict[time_tabs_name]
 
     if graph_name == 'Candlestick':
-        fig = make_subplots(rows=2, cols=1, row_heights=[0.8, 0.2], vertical_spacing=0) 
+        fig = make_subplots(rows=2, cols=1, row_heights=[0.8, 0.2], vertical_spacing=0, shared_xaxes=True) 
 
         fig.add_trace(go.Candlestick(x=x_data,open=df_ohlc['open'], high=df_ohlc['high'], low=df_ohlc['low'], close=df_ohlc['close'],
                                 increasing_line_color='#2FB835', decreasing_line_color='#FF3535', name='candlestick'), row=1, col=1)
@@ -301,52 +476,96 @@ def create_ohlc(df_ohlc, graph_name, time_tabs_name, coin_tab_name, stat_name):
                 )
 
     else :
-        fig = make_subplots(rows=2, cols=1, shared_xaxes=True,vertical_spacing=0.009,horizontal_spacing=0.009, row_heights=[0.7, 0.3])
+        fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.009, horizontal_spacing=0.009, row_heights=[0.8, 0.2])
 
-        fig.add_trace(go.Scatter(x = x_data, y = df_ohlc['close'], mode = 'lines',
+        fig.add_trace(go.Scatter(x = x_data, y = df_ohlc['close'], mode = 'lines', yaxis="y1", xaxis="x1",
             name='Close Price',
             connectgaps=True, marker = dict(color='rgb(255, 255, 0)')),row=1, col=1)
 
-        fig.add_trace(go.Scatter(x = x_data, y = df_ohlc['open'], mode = 'lines',
+        fig.add_trace(go.Scatter(x = x_data, y = df_ohlc['open'], mode = 'lines', yaxis="y1", xaxis="x1",
             name='Open Price',
             connectgaps=True, marker = dict(color = 'rgb(0, 0, 255)')),row=1, col=1)
         
-        fig.add_trace(go.Scatter(x = x_data, y = df_ohlc['high'], mode = 'lines',
+        fig.add_trace(go.Scatter(x = x_data, y = df_ohlc['high'], mode = 'lines', yaxis="y1", xaxis="x1",
             name='Highest',
             connectgaps=True, marker = dict(color='rgb(225, 0, 0)')),row=1, col=1)
         
-        fig.add_trace(go.Scatter(x = x_data, y = df_ohlc['low'], mode = 'lines',
+        fig.add_trace(go.Scatter(x = x_data, y = df_ohlc['low'], mode = 'lines', yaxis="y1", xaxis="x1",
             connectgaps=True, marker = dict(color='rgb(0, 255, 0)')),row=1, col=1)
 
-        fig.update_layout(
-                        paper_bgcolor='rgba(0,0,0,0)',
-                        plot_bgcolor='rgba(0,0,0,0)',
-                        font = {'color': colors['text'],'family': "Helvetica"},
-                )
+    fig.update_layout(
+        yaxis=dict(
+        title="USD",
+        titlefont=dict(
+            color="#FFFFFF"
+        ),
+        tickfont=dict(
+            color="#FFFFFF"
+        ),
+        layer="above traces",
+        anchor="free",
+        side="left",
+        position=0),
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font = {'color': colors['text'],'family': "Helvetica"})
 
     if 'MACD' in stat_name:
         macd_data = ta.trend.macd(df_ohlc['close'])
-        fig.add_trace(go.Scatter(x = x_data, y = macd_data, mode = 'lines',
+        fig.add_trace(go.Scatter(x = x_data, y = macd_data, mode = 'lines', yaxis="y2", xaxis="x2",
             name='MACD',
             connectgaps=True, marker = dict(color='#6FE9FF')), row=2, col=1)
+        fig.update_layout(
+            yaxis2=dict(
+            title="MACD",
+            titlefont=dict(
+                color="#6FE9FF"),
+            tickfont=dict(
+                color="#6FE9FF"),
+            layer="below traces",
+            anchor="x",
+            overlaying="y2",
+            side="left")
+            )
+        
 
     if 'Market Volume' in stat_name:
-        fig.add_trace(go.Bar(x = x_data, y = df_ohlc['volume'],
+        fig.add_trace(go.Bar(x = x_data, y = df_ohlc['volume'], yaxis="y3", xaxis="x2",
             name='Market Volume', marker = dict(color='#FF84E3')), row=2, col=1)
-    
-    fig.update_xaxes(showgrid=False, zeroline=False, rangeslider_visible=False, showticklabels=True,
-                showspikes=True, spikemode='across', spikesnap='cursor', showline=False,
-                spikecolor="rgb(10, 10, 10)",spikethickness=0.3, spikedash='solid')
+        fig.update_layout(
+            yaxis3=dict(
+            title="Market Volume",
+            titlefont=dict(
+                color="#FF84E3"),
+            tickfont=dict(
+                color="#FF84E3"),
+            layer="below traces",
+            anchor="x",
+            overlaying="y3",
+            side="right")
+            )
+    print(stat_name)
+    fig.update_xaxes(
+            showgrid=False, zeroline=False, rangeslider_visible=False,
+            showspikes=True, spikemode='across', spikesnap='cursor', showline=True,
+            spikecolor="rgb(10, 10, 10)",spikethickness=0.3, spikedash='solid')
 
-    fig.update_yaxes(showspikes=True, spikedash='solid',spikemode='across', 
-                    spikecolor="rgb(10, 10, 10)",spikesnap="cursor",spikethickness=0.3)
+    fig.update_yaxes(showspikes=True, spikedash='solid',spikemode='across', showticklabels=True,
+                    spikecolor="rgb(10, 10, 10)",spikesnap="cursor",spikethickness=0.3, )
 
-    fig.update_layout(
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)',
-        hovermode='closest',
-        font = {'color': colors['text'],'family': "Helvetica"},
-)
+    if ('Market Volume' not in stat_name and 'MACD' not in stat_name):
+        fig.update_layout(
+        xaxis=dict(showticklabels=True),
+        xaxis2=dict(showticklabels=False))
+    else:
+        fig.update_layout(
+            xaxis=dict(showticklabels=False),
+            xaxis2=dict(showticklabels=True),
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            hovermode='closest',
+            font = {'color': colors['text'],'family': "Helvetica"})
+
     return fig
 
 storage_component = html.Div(id='intermediate-value', style={'display': 'none'}) 
