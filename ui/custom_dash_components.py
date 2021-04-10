@@ -712,7 +712,7 @@ layer_3 = html.Div(id = 'layer-3', children = [
     coin_name_title, number_indicator
 ],style = {'display':'inline-block','width':'100%'})
 
-some_text = html.H3(id = 'some-text',children = 'hi', 
+debug_text = html.H3(id = 'debug-text',children = 'hi', 
                 style = {'textAlign': 'left', 
                         'color': colors['text'], 
                         'font-family': 'Helvetica', 
