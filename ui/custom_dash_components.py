@@ -722,3 +722,6 @@ some_text = html.H3(id = 'some-text',children = 'hi',
                         'font-weight': 9000,
                         'marginTop':0,
                         'marginBottom':0}) 
+
+
+storage_div = html.Div(id='storage', style={'display': 'none'})

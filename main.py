@@ -34,24 +34,61 @@ app.layout = html.Div(style = {'backgroundColor': colors['background'],
                       stat_choice, ohlc_graph,day_interval, title_indicators, gauge_indicator, 
                       title_summary, bullet_graph, techindicator_summary, 
                       toppers_table,market_summary_table, 
-                      market_summary_icon, market_summary_graph ])
+                      market_summary_icon, market_summary_graph, storage_div ])
 
 @app.callback(
     Output('ohlc', 'figure'),
+    Output('storage', 'children'),
     Input('graph_tab','value'),
     Input('time_tabs', 'value'),
     Input('coin-tabs', 'value'),
     Input('macdmarket','value'),
-    Input('ohlc','relayoutData'),
-    State('ohlc', 'figure'),
     )
-
-def update_graph(graph_name, time_tabs_name, coin_tab_name, stat_name, relayout_data, state):
-    x_range = state['layout']['xaxis']['range']
-    print(x_range)
+def update_graph(graph_name, time_tabs_name, coin_tab_name, stat_name):
     df_ohlc = dh.get_data(coin_tab_name, time_tabs_name, limit = 100)
     df_ohlc = df_ohlc.sort_values(by=['timestamp'])
-    return create_ohlc(df_ohlc, graph_name, time_tabs_name, coin_tab_name, stat_name)
+
+    date_range = json.dumps({"start":df_ohlc.iloc[0].name.strftime('%Y-%m-%d %H:%M:%S'),"end":df_ohlc.iloc[-1].name.strftime('%Y-%m-%d %H:%M:%S')})
+
+    return create_ohlc(df_ohlc, graph_name, time_tabs_name, coin_tab_name, stat_name),date_range
+
+#@app.callback(
+#    Output('ohlc', 'prependData'),
+#    [
+#        Input('coin-tabs','value'),
+#        Input('time_tabs', 'value'),
+#        Input('interval-component','n_intervals'),
+#        Input('ohlc','relayoutData'),
+#        Input('graph_tab','value'),
+#        Input('storage', 'children')
+#    ],
+#    State('ohlc', 'figure'),
+#)
+#def update_graph2(symbol, timeframe, n_intervals, relayout_data, graph_type, date_range, state):
+#    x_range = state['layout']['xaxis']['range']
+#    date_range = json.loads(date_range)
+#    print(x_range)
+#    print(date_range)
+#    
+#    if x_range[0] <= 10:
+#        print('inside')
+#        new_data = dh.get_data(symbol, timeframe, range=[None,date_range['start']], limit = 100)
+#        print(new_data)
+#
+#        if graph_type == 'Candlestick':
+#
+#            return_data = (dict(x = [new_data.index.strftime("%H:%M")],
+#                            open = [new_data['open']], 
+#                            high = [new_data['high']], 
+#                            low = [new_data['low']], 
+#                            close = [new_data['close']]),
+#                [0]
+#            )
+#            return return_data
+#        elif graph_type == 'Line Plot':
+#            pass
+#    else:
+#        return None
 
 
 @app.callback(Output('num-indicator', 'figure'),
