@@ -132,42 +132,19 @@ def update_coin_name(symbol):
 def update_coin_logo(symbol):
     return app.get_asset_url(f'img/{coin_imgs[symbol]}')
 
-#@app.callback(
-#    Output('some-text', 'children'),
-#    [
-#        Input('time_tabs','value'),
-#        Input('ohlc','relayoutData')
-#    ],
-#    [
-#        State('ohlc', 'figure')
-#    ])
-#def display_relayout_data(timeframe, relayoutdata, state):
-#    x_range = state['layout']['xaxis']['range']
-#    print("x_range:",x_range)
-#
-#    return str(x_range)
-
-
-@app.callback(Output('rsi-gauge', 'figure'),
+@app.callback([Output('rsi-gauge', 'figure'),
+               Output('bullet-indicator', 'figure')],
              [Input('interval-component', 'n_intervals'),
               Input('coin-tabs', 'value')])
               
-def update_rsi(time_tabs_name, coin_tab_name):
-    df = dh.get_data(coin_tab_name, '1d', limit = 1000)
-    df = add_all_ta_features(df, open="open", high = "high", low = "low", close = "close", 
+def update_technical_indicators(time_tabs_name, coin_tab_name):
+    df = dh.get_data(coin_tab_name, '1d', limit = 100).iloc[1:,:] #starting from 1 because the lastest data point's volume isn't the final volume
+    df = add_all_ta_features(df.reindex(index=df.index[::-1]), open="open", high = "high", low = "low", close = "close", 
                                 volume = "volume", fillna = True)
+    df = df.reindex(index=df.index[::-1])
     #norm_df = analytics.normalize_indicator(df)
-    return create_gauge_rsi_indicator(df)
-
-@app.callback(Output('bullet-indicator', 'figure'),
-             [Input('interval-component', 'n_intervals'),
-              Input('coin-tabs', 'value')])
-
-def update_bullet(time_tabs_name, coin_tab_name):
-    df = dh.get_data(coin_tab_name,'1d', limit = 1000)
-    df = add_all_ta_features(df, open = "open", high = "high", low = "low", close = "close", volume = "volume", fillna = True)
     df = df[['close', 'open', 'high', 'low', 'momentum_kama', 'momentum_rsi', 'trend_cci']]  
-    return create_bullet_graph(df)
+    return create_gauge_rsi_indicator(df), create_bullet_graph(df)
 
 @app.callback(Output('indicators-table', 'data'),
              [Input('interval-component', 'n_intervals'),
