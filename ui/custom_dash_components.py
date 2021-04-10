@@ -213,14 +213,9 @@ gauge_indicator = dcc.Graph(id ='rsi-gauge',
                 plot_bgcolor = 'rgba(0,0,0,0)',
                 height = 350)})
 
-def normalize_indicator(data):
-    scaler = preprocessing.MinMaxScaler()
-    normalized_data = scaler.fit_transform(data)
-    return normalized_data
-
 def create_gauge_rsi_indicator(data):
-    current_data = data.iloc[1, :] #Change it to 1
-    previous_data = data.iloc[2, :] 
+    current_data = data.iloc[0, :] #Change it to 1
+    previous_data = data.iloc[1, :] 
 
     fig = go.Figure(go.Indicator(
         domain = {'x': [0, 0.3], 'y': [0, 0]},
@@ -292,8 +287,12 @@ bullet_graph = dcc.Graph(id = 'bullet-indicator',
 
 def create_bullet_graph(data):
     norm_data = analytics.normalize_indicator(data)
-    current_data = norm_data[1, :]
-    previous_data = norm_data[2, :]
+    current_data = norm_data[0, :]
+    previous_data = norm_data[1, :]
+
+#    print(data.columns)
+#    print(current_data[4:],np.mean(current_data[4:]))
+#    print(previous_data[4:],np.mean(previous_data[4:]))
 
     fig = go.Figure(go.Indicator(
         mode = 'number+gauge+delta',
