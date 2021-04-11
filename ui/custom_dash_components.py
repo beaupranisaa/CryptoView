@@ -105,7 +105,13 @@ minute_interval = dcc.Interval(
         n_intervals=0
     )
     
-ohlc_graph = dcc.Graph(id='ohlc', 
+ohlc_graph = dcc.Graph(id='ohlc',
+        config={'modeBarButtonsToAdd':['drawline',
+                                        'drawopenpath',
+                                        'drawcircle',
+                                        'drawrect',
+                                        'eraseshape'
+                                       ]},
         style = {'display': 'inline-block', 'width': '100%'},
         figure={
         'layout': go.Layout(
