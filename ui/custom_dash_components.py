@@ -114,16 +114,37 @@ ohlc_graph = dcc.Graph(id='ohlc',
             height = 1000,
             width = 1500)})
 
+
+
+timeframe_title = html.H2 (children = 'Timeframe:', 
+                style = {'textAlign': 'center', 
+                        'color': colors['text'], 
+                        'font-family': 'Helvetica', 
+                        'font-size': '25px',
+                        'font-weight': 9000,
+                        'paddingTop':10,
+                        'paddingBottom':0,
+                        'paddingLeft':30,
+                        'marginTop':0,
+                        'marginBottom':0,
+                        'display': 'inline-block'})
+
 time_tabs_styles = {
-                'borderLeft': '3px solid #000000',
-                'width': '150px',
-                'height': '50px'
+                'borderLeft': '3px solid #000022',
+                'borderRight': '3px solid #000022',
+                'width': '60px',
+                'height': '50px',
+                'border-radius': '15px',
+                'display': 'inline-block'
             }
 
 time_tab_selected_style = {
-                'borderLeft': '3px solid #000000',
-                'width': '150px',
-                'height': '50px'
+                'borderLeft': '3px solid #000022',
+                'borderRight': '3px solid #000022',
+                'width': '60px',
+                'height': '50px',
+                'border-radius': '15px',
+                'display': 'inline-block'
             }
 
 timeframe_tabs = dcc.Tabs(id = 'time_tabs', value = timeframes[0],
@@ -134,26 +155,48 @@ timeframe_tabs = dcc.Tabs(id = 'time_tabs', value = timeframes[0],
                 'background': 'firebrick'},
         style = {'color': colors['text'],
                 'font-family': 'Helvetica',
-                'font-size':"150%",
+                'font-size':"120%",
                 'marginTop':"0px",
                 'paddingLeft': "0px",
                 'paddingRight': "0px",
                 'text-align': 'center',
                 'height': '50px',
-                'display': 'inline-block', 'vertical-align': 'top'})
+                'display': 'inline-block',
+                'vertical-align': 'center',
+                'border-radius': '15px',})
 
+graph_title = html.H2 (children = 'Plot Type:', 
+                style = {'textAlign': 'center', 
+                        'color': colors['text'], 
+                        'font-family': 'Helvetica', 
+                        'font-size': '25px',
+                        'font-weight': 9000,
+                        'paddingTop':10,
+                        'paddingBottom':0,
+                        'paddingLeft':30,
+                        'marginTop':0,
+                        'marginBottom':0,
+                        'display': 'inline-block'})
 graph_tabs_styles = {
-                'borderLeft': '3px solid #000000',
-                'borderTop': '3px solid #000000',
-                'width': '300px',
-                'height': '50px'
+                'borderLeft': '3px solid #000022',
+                'borderRight': '3px solid #000022',
+                'borderTop': '3px solid #000022',
+                'width': '150px',
+                'height': '50px',
+                'border-radius': '15px',
+                'textAlign': 'center',
+                'display': 'inline-block'
             }
 
 graph_tab_selected_style = {
-                'borderLeft': '3px solid #000000',
-                'borderTop': '3px solid #000000',
-                'width': '300px',
-                'height': '50px'
+                'borderLeft': '3px solid #000022',
+                'borderRight': '3px solid #000022',
+                'borderTop': '3px solid #000022',
+                'width': '150px',
+                'height': '50px',
+                'border-radius': '15px',
+                'textAlign': 'center',
+                'display': 'inline-block'
             }
 
 graph_tabs = dcc.Tabs(id = 'graph_tab', value = 'Candlestick',
@@ -164,15 +207,28 @@ graph_tabs = dcc.Tabs(id = 'graph_tab', value = 'Candlestick',
                 'background': 'firebrick'},
         style = {'color': colors['text'],
                 'font-family': 'Helvetica',
-                'font-size':"150%",
+                'font-size':"120%",
                 'marginTop':"0px",
                 'paddingLeft': "0px",
                 'paddingRight': "0px",
                 'text-align': 'center',
                 'height': '50px',
-                'display': 'inline-block', 'vertical-align': 'top'
+                'display': 'inline-block',
+                'vertical-align': 'center',
+                'border-radius': '15px',
                 })
-
+stat_title = html.H2 (children = 'Statistics:', 
+                style = {'textAlign': 'center', 
+                        'color': colors['text'], 
+                        'font-family': 'Helvetica', 
+                        'font-size': '25px',
+                        'font-weight': 9000,
+                        'paddingTop':10,
+                        'paddingBottom':0,
+                        'paddingLeft':30,
+                        'marginTop':0,
+                        'marginBottom':0,
+                        'display': 'inline-block'})
 stat_choice = dcc.Checklist(
                 id='macdmarket',
                 options=[{'label': i, 'value': i} for i in ['MACD', 'Market Volume']],
@@ -190,7 +246,17 @@ stat_choice = dcc.Checklist(
                 'height': '50px',
                 'display': 'inline-block',
                 'vertical-align': 'top',
-                "horizontalAlign": "center"})
+                'horizontalAlign': "center"})
+
+selection_tabs = html.Div(id = 'selection',
+                        style = {'backgroundColor': colors['background'], 
+                                'marginTop' : 0, 
+                                'marginBottom' : 0,
+                                'paddingTop' : 0,
+                                'paddingBottom': 0,
+                                'display': 'inline-block',
+                                'width' : 1500},
+                      children = [graph_title, graph_tabs, timeframe_title, timeframe_tabs,stat_title,stat_choice])
 
 title_indicators = html.H6 (children = 'Technical Indicators', 
                 style = {'textAlign': 'center', 
@@ -455,10 +521,10 @@ market_summary_graph = dcc.Graph(id='market_graph',
         )
 
 def create_ohlc(df_ohlc, graph_name, time_tabs_name, coin_tab_name, stat_name):
-    timestamp_dict = {  '1m': df_ohlc.index.strftime("%H:%M"),
+    timestamp_dict = {  '1m':df_ohlc.index.strftime("%H:%M %d/%m/%Y"),
                         '5m':df_ohlc.index.strftime("%H:%M %d/%m/%Y"),
                         '1h':df_ohlc.index.strftime("%H:%M %d/%m/%Y"),
-                        '1d':df_ohlc.index.strftime("%d/%m/%Y")}
+                        '1d':df_ohlc.index.strftime("%H:%M %d/%m/%Y")}
                 
     x_data = timestamp_dict[time_tabs_name]
 
@@ -543,7 +609,7 @@ def create_ohlc(df_ohlc, graph_name, time_tabs_name, coin_tab_name, stat_name):
             overlaying="y3",
             side="right")
             )
-    fig.update_xaxes(
+    fig.update_xaxes(range=[1000,1200],
             showgrid=False, zeroline=False, rangeslider_visible=False,
             showspikes=True, spikemode='across', spikesnap='cursor', showline=True,
             spikecolor="rgb(10, 10, 10)",spikethickness=0.3, spikedash='solid')
