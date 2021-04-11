@@ -36,14 +36,14 @@ OHLC:
 
 - [ ] Zooming thing works
 - [ ] Canvas for drawing
-- [ ] Remove date-time for one of the graphs
+- [x] Remove date-time for one of the graphs
 - [ ] Scaling of volume and MACD
-- [ ] Fix 5 mins
-- [ ] Beautiful tabs
+- [x] Fix 5 mins
+- [x] Beautiful tabs
 
 Market Summary:
 
-[ ] Putting them in a row.
-[ ] Put the word market summary
-[ ] Color correction
-[ ] Remove zoom/panning functions
+- [ ] Putting them in a row.
+- [ ] Put the word market summary
+- [ ] Color correction
+- [ ] Remove zoom/panning functions
