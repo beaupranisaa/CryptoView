@@ -30,11 +30,11 @@ app.layout = html.Div(style = {'backgroundColor': colors['background'],
                                 'marginBottom' : 0,
                                 'paddingTop' : 0,
                                 'paddingBottom': 0},
-                      children = [minute_interval, layer_1, tabs, layer_3, timeframe_tabs, graph_tabs, 
-                      stat_choice, ohlc_graph,day_interval, title_indicators, gauge_indicator, 
-                      title_summary, bullet_graph, techindicator_summary, 
-                      toppers_table,market_summary_table, 
-                      market_summary_icon, market_summary_graph, storage_div ])
+                      children = [minute_interval, layer_1, tabs, layer_3, selection_tabs,
+                                ohlc_graph,day_interval, title_indicators, gauge_indicator, 
+                                title_summary, bullet_graph, techindicator_summary, 
+                                toppers_table,market_summary_table, 
+                                market_summary_icon, market_summary_graph, storage_div ])
 
 @app.callback(
     Output('ohlc', 'figure'),
@@ -45,7 +45,7 @@ app.layout = html.Div(style = {'backgroundColor': colors['background'],
     Input('macdmarket','value'),
     )
 def update_graph(graph_name, time_tabs_name, coin_tab_name, stat_name):
-    df_ohlc = dh.get_data(coin_tab_name, time_tabs_name, limit = 100)
+    df_ohlc = dh.get_data(coin_tab_name, time_tabs_name, limit = 1200)
     df_ohlc = df_ohlc.sort_values(by=['timestamp'])
 
     date_range = json.dumps({"start":df_ohlc.iloc[0].name.strftime('%Y-%m-%d %H:%M:%S'),"end":df_ohlc.iloc[-1].name.strftime('%Y-%m-%d %H:%M:%S')})
