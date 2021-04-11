@@ -31,8 +31,8 @@ app.layout = html.Div(style = {'backgroundColor': colors['background'],
                                 'paddingTop' : 0,
                                 'paddingBottom': 0},
                       children = [minute_interval, layer_1, tabs, layer_3, selection_tabs,
-                                layer_4, day_interval, title_indicators, gauge_indicator, 
-                                title_summary, bullet_graph, techindicator_summary, 
+                                layer_4,day_interval, title_indicators, gauge_indicator, 
+                                techindicator_summary, bullet_graph, 
                                 toppers_table,market_summary_table, 
                                 market_summary_icon, market_summary_graph, storage_div ])
 
@@ -143,7 +143,7 @@ def update_technical_indicators(time_tabs_name, coin_tab_name):
                                 volume = "volume", fillna = True)
     df = df.reindex(index=df.index[::-1])
     #norm_df = analytics.normalize_indicator(df)
-    df = df[['close', 'open', 'high', 'low', 'momentum_kama', 'momentum_rsi', 'trend_cci']]  
+    #df = df[['close', 'open', 'high', 'low', 'momentum_kama', 'momentum_rsi', 'trend_cci', 'trend_sma_fast', 'trend_ema_fast']]  
     return create_gauge_rsi_indicator(df), create_bullet_graph(df)
 
 @app.callback(Output('indicators-table', 'data'),
@@ -152,7 +152,8 @@ def update_technical_indicators(time_tabs_name, coin_tab_name):
 
 def update_indicator_table(n, coin_tab_name):
     df = dh.get_data(coin_tab_name, '1d', limit = 1000)
-    df = add_all_ta_features(df, open = "open", high = "high", low = "low", close = "close", volume = "volume", fillna = True)
+    df = add_all_ta_features(df.reindex(index=df.index[::-1]), open = "open", high = "high", low = "low", close = "close", volume = "volume", fillna = True)
+    df = df.reindex(index=df.index[::-1])
     return indicators_table(df)
 
 if __name__ == '__main__':

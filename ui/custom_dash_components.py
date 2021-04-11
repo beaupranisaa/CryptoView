@@ -284,7 +284,7 @@ gauge_indicator = dcc.Graph(id ='rsi-gauge',
                 height = 350)})
 
 def create_gauge_rsi_indicator(data):
-    current_data = data.iloc[0, :] #Change it to 1
+    current_data = data.iloc[0, :]
     previous_data = data.iloc[1, :] 
 
     fig = go.Figure(go.Indicator(
@@ -344,41 +344,85 @@ title_summary = html.H6(children = 'Summary',
                         'marginBottom':0}) 
 
 bullet_graph = dcc.Graph(id = 'bullet-indicator',
-        style = {'width': '100%',
+        style = {'width': '75%',
                  'paddingBottom': 0,
                  'paddingTop' : 0,
                  'marginTop': 0,
-                 'marginBottom':0},
+                 'marginBottom':0,
+                 'display': 'block'},
         figure = {
             'layout': go.Layout(
                 paper_bgcolor = 'rgba(0,0,0,0)',
                 plot_bgcolor = 'rgba(0,0,0,0)',
                 height = 250)})
 
-def create_bullet_graph(data):
-    norm_data = analytics.normalize_indicator(data)
-    current_data = norm_data[0, :]
-    previous_data = norm_data[1, :]
+def signal_indicator(close, values, macd_signal):
+    if values[0] > 100 and values[0] < 150:
+        signal_cci = 'SELL'
+    elif values[0] == 100:
+        signal_cci = 'OVERBOUGHT'
+    elif values[0] == -100:
+        signal_cci = 'OVERSOLD'
+    elif values[0] >= 150:
+        signal_cci = 'STRONG SELL'
+    else: 
+        signal_cci = 'BUY'
+    if values[1] > 0 and values[1] < 20:
+        signal_rsi = 'BUY'
+    elif values[1] > 80 and values[1] < 100:
+        signal_rsi = 'SELL'
+    elif values[1] > 100:
+        signal_rsi = 'STRONG SELL'
+    elif values[1] < 0:
+        signal_rsi = 'STRONG BUY'
+    else:
+        signal_rsi = 'NEUTRAL'
+    if close > values[2]:
+        signal_kama = 'BUY'
+    else: 
+        signal_kama = 'SELL'
+    if values[3] or values[4] > close:
+        signal_sma = 'BUY'
+        signal_ema = 'BUY'
+    else:
+        signal_sma = 'SELL'
+        signal_sma = 'SELL'
+    
+    if values[5] > macd_signal:
+        signal_macd = 'BUY'
+    elif values[5] < macd_signal:
+        signal_macd = 'SELL'
+    else:
+        signal_macd = 'NEUTRAL'
+    signals = [signal_cci, signal_rsi, signal_kama, signal_sma, signal_ema, signal_macd] 
+    return signals
 
-#    print(data.columns)
-#    print(current_data[4:],np.mean(current_data[4:]))
-#    print(previous_data[4:],np.mean(previous_data[4:]))
+def create_bullet_graph(data):
+    close = data['close'][0]
+    macd_signal = data['trend_macd_signal'][0]
+    data = np.round(data[['trend_cci', 'momentum_rsi', 'momentum_kama', 'trend_sma_fast', 'trend_ema_fast', 'trend_macd']], 2)
+    data = np.transpose(data).iloc[:, 0]
+    values = np.array(data)
+    signals = signal_indicator(close, values, macd_signal)
+    total_buy = (signals.count('SELL') + signals.count('STRONG SELL'))/(len(signals) + 1)
 
     fig = go.Figure(go.Indicator(
-        mode = 'number+gauge+delta',
+        mode = 'number+gauge',
         gauge = {'shape': 'bullet',
                  'axis' : {'range' : [0, 1]},
                  'threshold' : {
-                     'line' : {'color': 'yellow', 'width': 3},
+                     'line' : {'color': 'gold', 'width': 3},
                      'thickness' : 0.75,
-                     'value' : np.mean(current_data[4:])},
+                     'value' : total_buy},
                  'steps': [
-                     {'range' : [0, 0.4], 'color': 'lightgray'},
-                     {'range' : [0.8, 1], 'color': 'firebrick'}]},
-        value = np.mean(current_data[4:]),
-        delta = {'reference': np.mean(previous_data[4:])},
-        domain = {'x': [1, 0], 'y': [0, 0]}))
-    
+                     {'range' : [0, 0.2], 'color': 'greenyellow'},
+                     {'range' : [0.2, 0.4], 'color': 'khaki'},
+                     {'range' : [0.4, 0.6], 'color': 'ivory'},
+                     {'range' : [0.6, 0.8], 'color': 'darkred'},
+                     {'range' : [0.8, 1], 'color': 'maroon'}]},
+        value = total_buy,
+        domain = {'x': [0.5, 0], 'y': [0, 0]}))
+        
     fig.update_layout(
         paper_bgcolor = colors['background'],
         plot_bgcolor = colors['background'],
@@ -390,15 +434,17 @@ day_interval = dcc.Interval(
         interval=60*60*60*1000,
         n_intervals=0)
 
-indicators = ["trend_cci", "trend_cci", "trend_macd_signal"]
-indicators_col_name = ["Indicators","Value", "Signal"]
+indicators = ['Indicators', '24H Values', '24H Signals']
+indicators_col_name = ["Indicators","24H Values", "24H Signals"]
 
-
-techindicator_summary = dash_table.DataTable(
+type = ['string', 'numeric', 'string']
+buy = 'BUY'
+sell = 'SELL'
+techindicator_summary = html.Div(dash_table.DataTable(
     id = 'indicators-table',
     columns = [{"name" : indicators_col_name[i], "id":col, 
-        "type": "numeric",} for i,col in enumerate(indicators)],
-    editable = True,
+        "type": 'any',} for i,col in enumerate(indicators)],
+    editable = False,
     style_header = {'background_color': colors['background'],
                     'font-family': 'Helvetica',
                     'font-size': '120%',
@@ -410,11 +456,11 @@ techindicator_summary = dash_table.DataTable(
                     'border': '0px',
                     'textAlign': 'center',
                     'paddingRight':20,
-                    'paddingLeft': 50,
+                    'paddingLeft': 20,
                     'paddingBottom': 10},
     style_table = {'width': '10px',
                    'paddingLeft': 50,
-                   'paddingBottom': 20},
+                   'paddingBottom': 5},
     style_cell = {'minWidt': 100, 
                   'width': 110,
                   'maxWidt': 300,
@@ -422,18 +468,33 @@ techindicator_summary = dash_table.DataTable(
                   'backgroundColor': 'firebrick',
                   'color': colors['text'],
                   'textAlign': 'center'},
-    style_data = {'border': '5px solid #000022'})
+    style_data = {'border': '5px solid #000022'},
+    style_data_conditional = [
+        {
+            'if': {'filter_query': '{24H Signals} eq "BUY" or {24H Signals} eq "STRONG BUY"'},
+            'backgroundColor': '#556B2F',
+            'color': 'white'
+        }]
+    ), 
+    style={ 'width': '35%', 
+            'display': 'block'})
 
 def indicators_table(data):
-    # data = np.transpose(data)
-    # data = data[data.columns[0]]
-    # data = data.to_dict('records')
-    data = data[['trend_cci', 'momentum_stoch_rsi', 'trend_macd_signal']]
-    # data = np.transpose(data).iloc[:, 0]
-    data = np.transpose(data.to_dict('records'))[0:5]
-    #data = list(data.to_dict('index').values())[0:5]
-    return data
+    close = data['close'][0]
+    macd_signal = data['trend_macd_signal'][0]
 
+    data = np.round(data[['trend_cci', 'momentum_stoch_rsi', 'momentum_kama', 'trend_sma_fast', 'trend_ema_fast', 'trend_macd']], 2)
+    data = np.transpose(data).iloc[:, 0]
+    values = np.array(data)
+    signals = signal_indicator(close, values, macd_signal)
+    indicators = ['Trend CCI', 'Stochastic RSI', 'Kaufmans Average', 'Simple MA', 'Exponential MA', 'MACD']
+    columns = ['Indicators', '24H Values', '24H Signals',  'Simple MA', 'Exponential MA', 'MACD']
+    df = pd.DataFrame(data = [indicators, values, signals], columns = columns)
+    df = np.transpose(df)
+    df = df.reset_index(drop = True)
+    df = df.rename(columns = {0: 'Indicators', 1: '24H Values', 2: '24H Signals'})
+    df = df.to_dict('records')
+    return df
 
 
 toppers = ["gainer","gainer_perc", "loser","loser_perc"]
