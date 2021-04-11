@@ -105,16 +105,20 @@ minute_interval = dcc.Interval(
         n_intervals=0
     )
     
-ohlc_graph = dcc.Graph(id='ohlc', 
+ohlc_graph = dcc.Graph(id='ohlc',
+        config={'modeBarButtonsToAdd':['drawline',
+                                        'drawopenpath',
+                                        'drawcircle',
+                                        'drawrect',
+                                        'eraseshape'
+                                       ]},
         style = {'display': 'inline-block', 'width': '100%'},
         figure={
         'layout': go.Layout(
             paper_bgcolor='rgba(0,0,0,0)',
             plot_bgcolor='rgba(0,0,0,0)',
             height = 1000,
-            width = 1500)})
-
-
+            )})
 
 timeframe_title = html.H2 (children = 'Timeframe:', 
                 style = {'textAlign': 'center', 
@@ -590,7 +594,10 @@ def create_ohlc(df_ohlc, graph_name, time_tabs_name, coin_tab_name, stat_name):
     x_data = timestamp_dict[time_tabs_name]
 
     if graph_name == 'Candlestick':
-        fig = make_subplots(rows=2, cols=1, row_heights=[0.8, 0.2], vertical_spacing=0, shared_xaxes=True) 
+        fig = make_subplots(rows=2, cols=1, row_heights=[0.8, 0.2], 
+                            vertical_spacing=0, shared_xaxes=True,
+                            specs=[[{"secondary_y": False}],
+                                   [{"secondary_y": True}]]) 
 
         fig.add_trace(go.Candlestick(x=x_data,open=df_ohlc['open'], high=df_ohlc['high'], low=df_ohlc['low'], close=df_ohlc['close'],
                                 increasing_line_color='#2FB835', decreasing_line_color='#FF3535', name='candlestick'), row=1, col=1)
@@ -602,7 +609,10 @@ def create_ohlc(df_ohlc, graph_name, time_tabs_name, coin_tab_name, stat_name):
                 )
 
     else :
-        fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.009, horizontal_spacing=0.009, row_heights=[0.8, 0.2])
+        fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.009, 
+                            horizontal_spacing=0.009, row_heights=[0.8, 0.2],
+                            specs=[[{"secondary_y": False}],
+                                   [{"secondary_y": True}]])
 
         fig.add_trace(go.Scatter(x = x_data, y = df_ohlc['close'], mode = 'lines', yaxis="y1", xaxis="x1",
             name='Close Price',
@@ -639,37 +649,52 @@ def create_ohlc(df_ohlc, graph_name, time_tabs_name, coin_tab_name, stat_name):
     if 'MACD' in stat_name:
         macd_data = ta.trend.macd(df_ohlc['close'])
         fig.add_trace(go.Scatter(x = x_data, y = macd_data, mode = 'lines', yaxis="y2", xaxis="x2",
-            name='MACD',
-            connectgaps=True, marker = dict(color='#6FE9FF')), row=2, col=1)
+            name='MACD', connectgaps=True, marker = dict(color='#6FE9FF')), 
+            row=2, col=1, secondary_y=False)
         fig.update_layout(
             yaxis2=dict(
             title="MACD",
+            fixedrange=True,
             titlefont=dict(
                 color="#6FE9FF"),
             tickfont=dict(
                 color="#6FE9FF"),
             layer="below traces",
-            anchor="x",
-            overlaying="y2",
             side="left")
             )
         
-
     if 'Market Volume' in stat_name:
-        fig.add_trace(go.Bar(x = x_data, y = df_ohlc['volume'], yaxis="y3", xaxis="x2",
-            name='Market Volume', marker = dict(color='#FF84E3')), row=2, col=1)
-        fig.update_layout(
-            yaxis3=dict(
-            title="Market Volume",
-            titlefont=dict(
-                color="#FF84E3"),
-            tickfont=dict(
-                color="#FF84E3"),
-            layer="below traces",
-            anchor="x",
-            overlaying="y3",
-            side="right")
-            )
+        if len(stat_name) == 1:
+            fig.add_trace(go.Bar(x = x_data, y = df_ohlc['volume'], yaxis="y2", xaxis="x2",
+                name='Market Volume', marker = dict(color='#FF84E3')), 
+                row=2, col=1, secondary_y=False)
+            fig.update_layout(
+                yaxis2=dict(
+                title="Market Volume",
+                fixedrange=True,
+                titlefont=dict(
+                    color="#FF84E3"),
+                tickfont=dict(
+                    color="#FF84E3"),
+                layer="below traces",
+                side="right")
+                )
+        else:
+            fig.add_trace(go.Bar(x = x_data, y = df_ohlc['volume'], yaxis="y3", xaxis="x2",
+                name='Market Volume', marker = dict(color='#FF84E3')), 
+                row=2, col=1, secondary_y=True)
+            fig.update_layout(
+                yaxis3=dict(
+                title="Market Volume",
+                fixedrange=True,
+                titlefont=dict(
+                    color="#FF84E3"),
+                tickfont=dict(
+                    color="#FF84E3"),
+                layer="below traces",
+                side="right")
+                )
+
     fig.update_xaxes(range=[1000,1200],
             showgrid=False, zeroline=False, rangeslider_visible=False,
             showspikes=True, spikemode='across', spikesnap='cursor', showline=True,
@@ -851,3 +876,7 @@ debug_text = html.H3(id = 'debug-text',children = 'hi',
 
 
 storage_div = html.Div(id='storage', style={'display': 'none'})
+
+layer_4 = html.Div(id = 'layer-4', children = [
+    ohlc_graph
+],style = {'display':'inline-block','width':'100%'})
