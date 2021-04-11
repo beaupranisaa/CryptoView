@@ -35,6 +35,7 @@ python main.py
 OHLC:
 
 - [ ] Zooming thing works
+- [ ] Changing the drawing color 
 - [x] Canvas for drawing
 - [x] Remove date-time for one of the graphs
 - [x] Scaling of volume and MACD

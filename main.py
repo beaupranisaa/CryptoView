@@ -31,7 +31,7 @@ app.layout = html.Div(style = {'backgroundColor': colors['background'],
                                 'paddingTop' : 0,
                                 'paddingBottom': 0},
                       children = [minute_interval, layer_1, tabs, layer_3, selection_tabs,
-                                ohlc_graph,day_interval, title_indicators, gauge_indicator, 
+                                layer_4, day_interval, title_indicators, gauge_indicator, 
                                 title_summary, bullet_graph, techindicator_summary, 
                                 toppers_table,market_summary_table, 
                                 market_summary_icon, market_summary_graph, storage_div ])

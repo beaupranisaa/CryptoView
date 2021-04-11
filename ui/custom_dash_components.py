@@ -118,9 +118,7 @@ ohlc_graph = dcc.Graph(id='ohlc',
             paper_bgcolor='rgba(0,0,0,0)',
             plot_bgcolor='rgba(0,0,0,0)',
             height = 1000,
-            width = 1500)})
-
-
+            )})
 
 timeframe_title = html.H2 (children = 'Timeframe:', 
                 style = {'textAlign': 'center', 
@@ -550,7 +548,10 @@ def create_ohlc(df_ohlc, graph_name, time_tabs_name, coin_tab_name, stat_name):
                 )
 
     else :
-        fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.009, horizontal_spacing=0.009, row_heights=[0.8, 0.2])
+        fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.009, 
+                            horizontal_spacing=0.009, row_heights=[0.8, 0.2],
+                            specs=[[{"secondary_y": False}],
+                                   [{"secondary_y": True}]])
 
         fig.add_trace(go.Scatter(x = x_data, y = df_ohlc['close'], mode = 'lines', yaxis="y1", xaxis="x1",
             name='Close Price',
@@ -814,3 +815,7 @@ debug_text = html.H3(id = 'debug-text',children = 'hi',
 
 
 storage_div = html.Div(id='storage', style={'display': 'none'})
+
+layer_4 = html.Div(id = 'layer-4', children = [
+    ohlc_graph
+],style = {'display':'inline-block','width':'100%'})
