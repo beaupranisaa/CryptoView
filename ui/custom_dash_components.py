@@ -645,7 +645,8 @@ def create_ohlc(df_ohlc, graph_name, time_tabs_name, coin_tab_name, stat_name):
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         font = {'color': colors['text'],'family': "Helvetica"},
-        newshape_line_color='white')
+        newshape_line_color='#FFF8B7',
+        newshape_line_width=2)
 
     if 'MACD' in stat_name:
         macd_data = ta.trend.macd(df_ohlc['close'])
