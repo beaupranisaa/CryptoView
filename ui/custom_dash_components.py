@@ -298,7 +298,21 @@ def create_gauge_rsi_indicator(data):
             {'range': [0, 20], 'color': "lightgray"},
             {'range': [80, 100], 'color': 'darkred'}],
             'threshold' : {'line': {'color': "orange", 'width': 4}, 'thickness': 0.75, 'value': current_data['momentum_rsi']}}))
-    
+
+    fig.add_annotation(x = 0.03, y = -0.15,
+            text = 'BUY',
+            showarrow = False,
+            font = dict(
+                family = 'Helvetica',
+                size = 18))
+
+    fig.add_annotation(x = 0.239, y = -0.15,
+            text = 'SELL',
+            showarrow = False,
+            font = dict(
+                family = 'Helvetica',
+                size = 18))
+
     fig.add_trace(go.Indicator(
         domain = {'x': [0.32, 0.7], 'y': [0, 0]},
         value = current_data['trend_cci'],
@@ -307,11 +321,23 @@ def create_gauge_rsi_indicator(data):
         delta = {'reference': previous_data['trend_cci']},
         gauge = {'axis': {'range': [-200, 200]},
         'steps' : [
-            {'range': [-200, -150], 'color': 'white'},
-            {'range': [-150, -100], 'color': 'lightgray'},
-            {'range': [100, 150], 'color': 'firebrick'},
-            {'range': [150, 200], 'color': 'darkred'}],
+            {'range': [-200, -100], 'color': 'lightgray'},
+            {'range': [100, 200], 'color': 'darkred'}],
             'threshold': {'line': {'color': 'orange', 'width': 4}, 'thickness': 0.75, 'value': current_data['trend_cci']}}))
+
+    fig.add_annotation(x = 0.405, y = -0.15,
+            text = 'BUY',
+            showarrow = False,
+            font = dict(
+                family = 'Helvetica',
+                size = 18))
+
+    fig.add_annotation(x = 0.614, y = -0.15,
+            text = 'SELL',
+            showarrow = False,
+            font = dict(
+                family = 'Helvetica',
+                size = 18))
 
     fig.add_trace(go.Indicator(
         domain = {'x': [0.75, 1], 'y': [0, 0]},
@@ -325,6 +351,20 @@ def create_gauge_rsi_indicator(data):
             {'range': [0.75*data['close'].max(), data['close'].max()], 'color': 'darkred'}],
             'threshold': {'line': {'color': 'yellow', 'width': 4}, 'thickness': 0.75, 'value': current_data['momentum_kama']}}))
 
+    fig.add_annotation(x = 0.785, y = -0.15,
+            text = 'BUY',
+            showarrow = False,
+            font = dict(
+                family = 'Helvetica',
+                size = 18))
+
+    fig.add_annotation(x = 0.995, y = -0.15,
+            text = 'SELL',
+            showarrow = False,
+            font = dict(
+                family = 'Helvetica',
+                size = 18))
+    
     fig.update_layout( 
         paper_bgcolor = colors['background'],
         plot_bgcolor = colors['background'],
@@ -332,41 +372,30 @@ def create_gauge_rsi_indicator(data):
     return fig
      
 
-title_summary = html.H6(children = 'Summary', 
-                style = {'textAlign': 'center', 
-                        'color': colors['text'], 
-                        'font-family': 'Helvetica', 
-                        'font-size': '25px',
-                        'paddingTop': 0,
-                        'paddingBottom':0,
-                        'paddingLeft':30,
-                        'marginTop':0,
-                        'marginBottom':0}) 
-
 bullet_graph = dcc.Graph(id = 'bullet-indicator',
-        style = {'width': '75%',
+        style = {'width': '60%',
                  'paddingBottom': 0,
                  'paddingTop' : 0,
                  'marginTop': 0,
                  'marginBottom':0,
-                 'display': 'block'},
+                 'display': 'flex'},
         figure = {
             'layout': go.Layout(
                 paper_bgcolor = 'rgba(0,0,0,0)',
                 plot_bgcolor = 'rgba(0,0,0,0)',
                 height = 250)})
 
-def signal_indicator(close, values, macd_signal):
+
+def signal_indicator(close, values, macd_signal, ao_prev):
     if values[0] > 100 and values[0] < 150:
         signal_cci = 'SELL'
-    elif values[0] == 100:
-        signal_cci = 'OVERBOUGHT'
-    elif values[0] == -100:
-        signal_cci = 'OVERSOLD'
+    elif values[0] < -100 and values[0] > -200:
+        signal_cci = 'BUY'
     elif values[0] >= 150:
         signal_cci = 'STRONG SELL'
     else: 
-        signal_cci = 'BUY'
+        signal_cci = 'NEUTRAL'
+
     if values[1] > 0 and values[1] < 20:
         signal_rsi = 'BUY'
     elif values[1] > 80 and values[1] < 100:
@@ -394,24 +423,32 @@ def signal_indicator(close, values, macd_signal):
         signal_macd = 'SELL'
     else:
         signal_macd = 'NEUTRAL'
-    signals = [signal_cci, signal_rsi, signal_kama, signal_sma, signal_ema, signal_macd] 
+
+    if ao_prev < values[6]: 
+        signal_awesome = 'BUY'
+    elif ao_prev > values[6]: 
+        signal_awesome = 'SELL'
+    else:
+        signal_awesome = 'NEUTRAL'
+    signals = [signal_cci, signal_rsi, signal_kama, signal_sma, signal_ema, signal_macd, signal_awesome] 
     return signals
 
 def create_bullet_graph(data):
     close = data['close'][0]
     macd_signal = data['trend_macd_signal'][0]
-    data = np.round(data[['trend_cci', 'momentum_rsi', 'momentum_kama', 'trend_sma_fast', 'trend_ema_fast', 'trend_macd']], 2)
+    ao_prev = data['momentum_ao'][1]
+    data = np.round(data[['trend_cci', 'momentum_rsi', 'momentum_kama', 'trend_sma_fast', 'trend_ema_fast', 'trend_macd', 'momentum_ao']], 2)
     data = np.transpose(data).iloc[:, 0]
     values = np.array(data)
-    signals = signal_indicator(close, values, macd_signal)
-    total_buy = (signals.count('SELL') + signals.count('STRONG SELL'))/(len(signals) + 1)
+    signals = signal_indicator(close, values, macd_signal, ao_prev)
+    total_buy = (signals.count('SELL') + signals.count('STRONG SELL'))/(len(signals))
 
     fig = go.Figure(go.Indicator(
         mode = 'number+gauge',
         gauge = {'shape': 'bullet',
                  'axis' : {'range' : [0, 1]},
                  'threshold' : {
-                     'line' : {'color': 'gold', 'width': 3},
+                     'line' : {'color': 'black', 'width': 3},
                      'thickness' : 0.75,
                      'value' : total_buy},
                  'steps': [
@@ -421,13 +458,46 @@ def create_bullet_graph(data):
                      {'range' : [0.6, 0.8], 'color': 'darkred'},
                      {'range' : [0.8, 1], 'color': 'maroon'}]},
         value = total_buy,
-        domain = {'x': [0.5, 0], 'y': [0, 0]}))
-        
+        domain = {'x': [0, 0], 'y': [0, 0]}))
+    
+    fig.add_annotation(x = 0, y = 1.4,
+            text = "BUY",
+            showarrow = False,
+            font = dict(
+                family = 'Helvetica',
+                size = 18
+            ))
+
+    fig.add_annotation(x = 0.375, y = 1.4,
+            text = "NEUTRAL",
+            showarrow = False,
+            font = dict(
+                family = 'Helvetica',
+                size = 18
+            ))
+
+    fig.add_annotation(x = 0.75, y = 1.4,
+            text = "SELL",
+            showarrow = False,
+            font = dict(
+                family = 'Helvetica',
+                size = 18
+            ))
+
+    fig.add_annotation(x = 0, y = 1.9,
+            text = "CONFLUENCE",
+            showarrow = False,
+            font = dict(
+                family = 'Helvetica',
+                size = 30
+            ))
+
     fig.update_layout(
         paper_bgcolor = colors['background'],
         plot_bgcolor = colors['background'],
         font = {'color': colors['text'], 'family': 'Helvetica'})
     return fig
+
 
 day_interval = dcc.Interval(
         id='d-interval-component',
@@ -437,9 +507,6 @@ day_interval = dcc.Interval(
 indicators = ['Indicators', '24H Values', '24H Signals']
 indicators_col_name = ["Indicators","24H Values", "24H Signals"]
 
-type = ['string', 'numeric', 'string']
-buy = 'BUY'
-sell = 'SELL'
 techindicator_summary = html.Div(dash_table.DataTable(
     id = 'indicators-table',
     columns = [{"name" : indicators_col_name[i], "id":col, 
@@ -474,27 +541,35 @@ techindicator_summary = html.Div(dash_table.DataTable(
             'if': {'filter_query': '{24H Signals} eq "BUY" or {24H Signals} eq "STRONG BUY"'},
             'backgroundColor': '#556B2F',
             'color': 'white'
+        },
+        {
+            'if': {'filter_query': '{24H Signals} eq "NEUTRAL"'},
+            'backgroundColor': 'dodgerblue',
+            'color': 'white'
         }]
     ), 
     style={ 'width': '35%', 
-            'display': 'block'})
+            'display': 'inline'})
 
 def indicators_table(data):
     close = data['close'][0]
     macd_signal = data['trend_macd_signal'][0]
-
-    data = np.round(data[['trend_cci', 'momentum_stoch_rsi', 'momentum_kama', 'trend_sma_fast', 'trend_ema_fast', 'trend_macd']], 2)
+    ao_prev = data['momentum_ao'][1]
+    data = np.round(data[['trend_cci', 'momentum_rsi', 'momentum_kama', 'trend_sma_fast', 'trend_ema_fast', 'trend_macd', 'momentum_ao']], 2)
     data = np.transpose(data).iloc[:, 0]
     values = np.array(data)
-    signals = signal_indicator(close, values, macd_signal)
-    indicators = ['Trend CCI', 'Stochastic RSI', 'Kaufmans Average', 'Simple MA', 'Exponential MA', 'MACD']
-    columns = ['Indicators', '24H Values', '24H Signals',  'Simple MA', 'Exponential MA', 'MACD']
+    signals = signal_indicator(close, values, macd_signal, ao_prev)
+    indicators = ['Trend CCI', 'Relative Strength', 'Kaufmans Average', 'Simple MA', 'Exponential MA', 'MACD', 'Awesome Oscillator']
+    columns = ['Indicators', '24H Values', '24H Signals',  'Simple MA', 'Exponential MA', 'MACD', 'Awesome Oscillator']
     df = pd.DataFrame(data = [indicators, values, signals], columns = columns)
     df = np.transpose(df)
     df = df.reset_index(drop = True)
     df = df.rename(columns = {0: 'Indicators', 1: '24H Values', 2: '24H Signals'})
     df = df.to_dict('records')
     return df
+
+technicals = html.Div(children = [bullet_graph, techindicator_summary], 
+            style={'width': '100%', 'display': 'flex'})
 
 
 toppers = ["gainer","gainer_perc", "loser","loser_perc"]
