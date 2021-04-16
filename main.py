@@ -33,8 +33,7 @@ app.layout = html.Div(style = {'backgroundColor': colors['background'],
                       children = [minute_interval, 
                                 layer_1, tabs, layer_3, selection_tabs,
                                 layer_4,day_interval, title_indicators, gauge_indicator, 
-                                techindicator_summary, bullet_graph, 
-                                layer_6, storage_div ])
+                                technicals, layer_6, storage_div ])
 
 @app.callback(
     Output('ohlc', 'figure'),
@@ -138,12 +137,10 @@ def update_coin_logo(symbol):
               Input('coin-tabs', 'value')])
               
 def update_technical_indicators(time_tabs_name, coin_tab_name):
-    df = dh.get_data(coin_tab_name, '1d', limit = 100).iloc[1:,:] #starting from 1 because the lastest data point's volume isn't the final volume
+    df = dh.get_data(coin_tab_name, '1d', limit = 100).iloc[0:,:] #starting from 1 because the lastest data point's volume isn't the final volume
     df = add_all_ta_features(df.reindex(index=df.index[::-1]), open="open", high = "high", low = "low", close = "close", 
                                 volume = "volume", fillna = True)
     df = df.reindex(index=df.index[::-1])
-    #norm_df = analytics.normalize_indicator(df)
-    #df = df[['close', 'open', 'high', 'low', 'momentum_kama', 'momentum_rsi', 'trend_cci', 'trend_sma_fast', 'trend_ema_fast']]  
     return create_gauge_rsi_indicator(df), create_bullet_graph(df)
 
 @app.callback(Output('indicators-table', 'data'),
