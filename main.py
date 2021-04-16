@@ -30,10 +30,10 @@ app.layout = html.Div(style = {'backgroundColor': colors['background'],
                                 'marginBottom' : 0,
                                 'paddingTop' : 0,
                                 'paddingBottom': 0},
-                      children = [minute_interval, layer_1, tabs, layer_3, selection_tabs,
+                      children = [minute_interval, 
+                                layer_1, tabs, layer_3, selection_tabs,
                                 layer_4,day_interval, title_indicators, gauge_indicator, 
-                                technicals, toppers_table,market_summary_table, 
-                                market_summary_icon, market_summary_graph, storage_div ])
+                                technicals, layer_6, storage_div ])
 
 @app.callback(
     Output('ohlc', 'figure'),
