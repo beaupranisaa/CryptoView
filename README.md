@@ -35,7 +35,7 @@ python main.py
 OHLC:
 
 - [ ] Zooming thing works
-- [ ] Changing the drawing color 
+- [x] Changing the drawing color 
 - [x] Canvas for drawing
 - [x] Remove date-time for one of the graphs
 - [x] Scaling of volume and MACD
@@ -44,7 +44,6 @@ OHLC:
 
 Market Summary:
 
-- [ ] Putting them in a row.
-- [ ] Put the word market summary
-- [ ] Color correction
-- [ ] Remove zoom/panning functions
+- [x] Putting them in a row.
+- [x] Color correction
+- [x] Remove zoom/panning functions
