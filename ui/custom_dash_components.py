@@ -344,15 +344,15 @@ def create_gauge_rsi_indicator(data):
 
     fig.add_trace(go.Indicator(
         domain = {'x': [0.75, 1], 'y': [0, 0]},
-        value = current_data['momentum_kama'],
+        value = current_data['momentum_uo'],
         mode = 'gauge+number+delta',
-        title = {'text': 'Moving Averages'},
-        delta = {'reference': previous_data['momentum_kama']},
-        gauge = {'axis': {'range': [None, data['close'].max()]},
+        title = {'text': 'Ultimate Oscillator'},
+        delta = {'reference': previous_data['momentum_uo']},
+        gauge = {'axis': {'range': [None, 100]},
         'steps' : [
-            {'range': [0, 0.25*data['close'].max()], 'color': 'lightgray'},
-            {'range': [0.75*data['close'].max(), data['close'].max()], 'color': 'darkred'}],
-            'threshold': {'line': {'color': 'yellow', 'width': 4}, 'thickness': 0.75, 'value': current_data['momentum_kama']}}))
+            {'range': [0, 30], 'color': 'lightgray'},
+            {'range': [70, 100], 'color': 'darkred'}],
+            'threshold': {'line': {'color': 'yellow', 'width': 4}, 'thickness': 0.75, 'value': current_data['momentum_uo']}}))
 
     fig.add_annotation(x = 0.785, y = -0.15,
             text = 'BUY',
@@ -416,14 +416,17 @@ def signal_indicator(close, values, macd_signal, ao_prev):
     if values[3] or values[4] > close:
         signal_sma = 'BUY'
         signal_ema = 'BUY'
+    elif values[3] == close and values[4] == close:
+        signal_sma = 'NEUTRAL'
+        signal_ema = 'NEUTRAL'
     else:
         signal_sma = 'SELL'
-        signal_sma = 'SELL'
+        signal_ema = 'SELL'
     
     if values[5] > macd_signal:
-        signal_macd = 'BUY'
-    elif values[5] < macd_signal:
         signal_macd = 'SELL'
+    elif values[5] < macd_signal:
+        signal_macd = 'BUY'
     else:
         signal_macd = 'NEUTRAL'
 
@@ -433,18 +436,27 @@ def signal_indicator(close, values, macd_signal, ao_prev):
         signal_awesome = 'SELL'
     else:
         signal_awesome = 'NEUTRAL'
-    signals = [signal_cci, signal_rsi, signal_kama, signal_sma, signal_ema, signal_macd, signal_awesome] 
+
+    if values[7] > 0 and values[7] <= 30:
+        signal_ultimate = 'BUY'
+    elif values[7] >= 70:
+        signal_ultimate = 'SELL'
+    else:
+        signal_ultimate = 'NEUTRAL'
+    signals = [signal_cci, signal_rsi, signal_kama, signal_sma, 
+                        signal_ema, signal_macd, signal_awesome, signal_ultimate] 
     return signals
 
 def create_bullet_graph(data):
     close = data['close'][0]
     macd_signal = data['trend_macd_signal'][0]
     ao_prev = data['momentum_ao'][1]
-    data = np.round(data[['trend_cci', 'momentum_rsi', 'momentum_kama', 'trend_sma_fast', 'trend_ema_fast', 'trend_macd', 'momentum_ao']], 2)
+    data = np.round(data[['trend_cci', 'momentum_rsi', 'momentum_kama', 'trend_sma_fast', 'trend_ema_fast', 'trend_macd', 'momentum_ao', 'momentum_uo']], 2)
     data = np.transpose(data).iloc[:, 0]
     values = np.array(data)
     signals = signal_indicator(close, values, macd_signal, ao_prev)
-    total_buy = (signals.count('SELL') + signals.count('STRONG SELL'))/(len(signals))
+    total_buy = ((1.5 * signals.count('SELL')) + (2 * signals.count('STRONG SELL')) + 
+                    signals.count('NEUTRAL'))/(len(signals)) #Need to change this, for initialization only
 
     fig = go.Figure(go.Indicator(
         mode = 'number+gauge',
@@ -558,12 +570,12 @@ def indicators_table(data):
     close = data['close'][0]
     macd_signal = data['trend_macd_signal'][0]
     ao_prev = data['momentum_ao'][1]
-    data = np.round(data[['trend_cci', 'momentum_rsi', 'momentum_kama', 'trend_sma_fast', 'trend_ema_fast', 'trend_macd', 'momentum_ao']], 2)
+    data = np.round(data[['trend_cci', 'momentum_rsi', 'momentum_kama', 'trend_sma_fast', 'trend_ema_fast', 'trend_macd', 'momentum_ao', 'momentum_uo']], 2)
     data = np.transpose(data).iloc[:, 0]
     values = np.array(data)
     signals = signal_indicator(close, values, macd_signal, ao_prev)
-    indicators = ['Trend CCI', 'Relative Strength', 'Kaufmans Average', 'Simple MA', 'Exponential MA', 'MACD', 'Awesome Oscillator']
-    columns = ['Indicators', '24H Values', '24H Signals',  'Simple MA', 'Exponential MA', 'MACD', 'Awesome Oscillator']
+    indicators = ['Trend CCI', 'Relative Strength', 'Kaufmans Average', 'Simple MA', 'Exponential MA', 'MACD', 'Awesome Oscillator', 'Ultimate Oscillator']
+    columns = ['Indicators', '24H Values', '24H Signals',  'Simple MA', 'Exponential MA', 'MACD', 'Awesome Oscillator', 'Ultimate Oscillator']
     df = pd.DataFrame(data = [indicators, values, signals], columns = columns)
     df = np.transpose(df)
     df = df.reset_index(drop = True)
