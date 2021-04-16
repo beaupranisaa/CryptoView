@@ -576,7 +576,7 @@ technicals = html.Div(children = [bullet_graph, techindicator_summary],
 
 
 toppers = ["gainer","gainer_perc", "loser","loser_perc"]
-col_name = ["24h GAINER","","24h LOSER",""]
+col_name = ["24h GAINER","24h GAINER","24h LOSER","24h LOSER"]
 col_colours = ['#205304','firebrick']
 
 toppers_table = html.Div(dash_table.DataTable(
@@ -619,7 +619,7 @@ toppers_table = html.Div(dash_table.DataTable(
             'paddingTop': 10}
     )
 market_sum = ["coin","close", "open","volume"]
-market_sum_col_name = ["","close", "open","volume"]
+market_sum_col_name = ["Market Summary","Market Summary","Market Summary","Market Summary"]
 market_col_colours = ['#FFFF00','#0000FF','#FFA500']
 market_summary_table = html.Div(dash_table.DataTable(
     id='market_summary',
@@ -659,7 +659,7 @@ market_summary_table = html.Div(dash_table.DataTable(
 market_summary_icon = html.Div(html.Div(id = 'market_icon'),
         style = {'display':'flex',
                  'paddingLeft': 500,
-                 'paddingTop': 85}
+                 'paddingTop': 95}
         )
 
 market_summary_graph = html.Div(dcc.Graph(id='market_graph', 
