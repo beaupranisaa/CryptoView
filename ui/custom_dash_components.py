@@ -1,5 +1,6 @@
 import dash_html_components as html
 import dash_core_components as dcc
+import dash_bootstrap_components as dbc
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 import data_handler
@@ -20,7 +21,9 @@ from io import BytesIO
 from IPython.display import HTML
 
 # Create the app
-app = dash.Dash()
+external_stylesheets = [dbc.themes.BOOTSTRAP]
+app = dash.Dash(external_stylesheets=external_stylesheets)
+# app = dash.Dash()
 
 coins = ['Bitcoin','Ethereum', "Ripple", "Dogecoin", 'Tezos','Litecoin','EOS','Binance', 'BTC Cash']
 symbols = ["BTCUSDT", "ETHUSDT", "XRPUSDT", "DOGEUSDT", "XTZUSDT", "LTCUSDT", "EOSUSDT", "BNBUSDT", "BCHUSDT"]
@@ -499,13 +502,14 @@ def indicators_table(data):
 
 toppers = ["gainer","gainer_perc", "loser","loser_perc"]
 col_name = ["24h GAINER","","24h LOSER",""]
-col_colours = ['#008000','#FF0000']
+col_colours = ['#205304','firebrick']
 
-toppers_table = dash_table.DataTable(
+toppers_table = html.Div(dash_table.DataTable(
     id='Topper',
     columns=[{"name" : col_name[i],
               "id":col, 
             "type": "numeric",
+
             } 
             for i,col in enumerate(toppers)],
     style_header = {'backgroundColor': '#000022',
@@ -513,20 +517,17 @@ toppers_table = dash_table.DataTable(
                     'font-size':"120%",
                     'color':"#DADBFE",
                     'fontWeight': 'bold',
-                    'paddingRight':100,
-                    'marginTop':0,
-                    'marginBottom':0,
                     'border': '0px',
-                    'text-align': 'center',
+                    'textAlign': 'center',
                     },
-    style_table = {'width':'10px'},
-    style_cell={'minWidt': 95, 
-                'width': 95, 
-                'maxWidth': 140,
-                'font-family': 'Helvetica',
-                'backgroundColor': '#000022',
-                'color': '#DADBFE',
-                'text-align': 'center'},
+    style_table = {'width': '10px',
+                   'paddingLeft': 50,
+                   'paddingTop': 40},
+    style_cell = {'minWidth': '180px', 'width': '180px', 'maxWidth': '180px',
+                  'font-family': 'Helvetica',
+                  'backgroundColor': '#000022',
+                  'color': '#DADBFE',
+                  'text-align': 'center'},
     style_data={ 'border': '5px solid #000022'},
     style_data_conditional=([ {'if': {'column_id': c},
                                     'backgroundColor': col_colours[i],
@@ -537,45 +538,62 @@ toppers_table = dash_table.DataTable(
                                     'fontWeight': 'bold'
                              } for i,c in enumerate(["gainer_perc","loser_perc"])
      ]),
+    merge_duplicate_headers=True
+    ),
+    style = {'display':'flex',
+            'paddingTop': 10}
     )
-
 market_sum = ["coin","close", "open","volume"]
 market_sum_col_name = ["","close", "open","volume"]
-
-market_summary_table = dash_table.DataTable(
+market_col_colours = ['#FFFF00','#0000FF','#FFA500']
+market_summary_table = html.Div(dash_table.DataTable(
     id='market_summary',
     columns=[{"name" : market_sum_col_name[i],
               "id":col, 
             "type": "numeric",
             } 
             for i,col in enumerate(market_sum)],
+    merge_duplicate_headers = True,
     style_header = {'backgroundColor': '#000022',
                     'font-family': 'Helvetica',
                     'font-size':"120%",
                     'color':"#DADBFE",
                     'fontWeight': 'bold',
-                    'paddingRight':75,
-                    'marginTop':0,
-                    'marginBottom':0,
                     'border': '0px',
-                    'textAlign': 'center',
+                    'textAlign':"center",
                     },
-    style_table = {'width':'10px'},
-    style_cell={'minWidt': 95, 
-                'width': 95, 
-                'maxWidth': 140,
+    style_table = {'width':'10px',
+                   'display':'inline-block'},
+    style_cell={'minWidth': '180px', 'width': '180px', 'maxWidth': '180px',
                 'font-family': 'Helvetica',
                 'font-weight': 'bold',
                 'backgroundColor': '#000022',
                 'color': '#DADBFE',
                 'textAlign': 'center'},
-    style_data={ 'border': '5px solid #000022'}
+    style_data={ 'border': '10px solid #000022'},
+    style_data_conditional=([ {'if': {'column_id': c,'row_index': 0},
+                                    'color': market_col_colours[i],
+                                    'fontWeight': 'bold'
+                             } for i,c in enumerate(["close","open","volume"])
+     ]),
+    ),
+    style = {'display':'flex',
+             'paddingTop': 10}
     )
 
-market_summary_icon = html.Div(id = 'market_icon')
+market_summary_icon = html.Div(html.Div(id = 'market_icon'),
+        style = {'display':'flex',
+                 'paddingLeft': 500,
+                 'paddingTop': 85}
+        )
 
-market_summary_graph = dcc.Graph(id='market_graph', 
-        style = {'display': 'inline-block', 'width': '100%'},
+market_summary_graph = html.Div(dcc.Graph(id='market_graph', 
+        config = {'displayModeBar': False},
+        style = {'display': 'flex', 
+                 'width': '100%',
+                 'margin_bottom':'5px',
+                 'paddingRight': 200,
+                 'paddingBottom': 500},
         figure={
         'layout': go.Layout(
             paper_bgcolor='rgba(0,0,0,0)',
@@ -583,7 +601,12 @@ market_summary_graph = dcc.Graph(id='market_graph',
             height = 250,
             width = 200
             )}
+        ),
+        style = {'display':'flex',
+                 'paddingLeft': 100,
+                 'paddingBottom': 150}
         )
+    
 
 def create_ohlc(df_ohlc, graph_name, time_tabs_name, coin_tab_name, stat_name):
     timestamp_dict = {  '1m':df_ohlc.index.strftime("%H:%M %d/%m/%Y"),
@@ -766,6 +789,12 @@ def topper_rank(data):
 def market_summary(data):
     sorted_coin = sort_coin(data, 'volume')
     ranks = []
+    rank_top = {}
+    rank_top['coin'] = ''
+    rank_top['close'] = 'Close'
+    rank_top['open'] = 'Open'
+    rank_top['volume'] = 'Volume'
+    ranks.append(rank_top)
     for i in range(3):
         rank = {}
         rank['coin'] = sorted_coin[i]['coins']
@@ -882,3 +911,18 @@ storage_div = html.Div(id='storage', style={'display': 'none'})
 layer_4 = html.Div(id = 'layer-4', children = [
     ohlc_graph
 ],style = {'display':'inline-block','width':'100%'})
+
+layer_6 = html.Div(
+    [
+        dbc.Row(
+            [
+                dbc.Col(toppers_table, style={'width':'200%'}),
+                dbc.Col(market_summary_icon),
+                dbc.Col(market_summary_table),
+                dbc.Col(market_summary_graph),
+            ],
+            style={'display':'flex'}
+        ),
+    ],
+    # style={'width':'100%'}
+)
