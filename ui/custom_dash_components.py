@@ -447,7 +447,7 @@ def signal_indicator(close, values, macd_signal, ao_prev):
                         signal_ema, signal_macd, signal_awesome, signal_ultimate] 
     return signals
 
-def create_bullet_graph(data):
+def create_bullet_graph(data, weights):
     close = data['close'][0]
     macd_signal = data['trend_macd_signal'][0]
     ao_prev = data['momentum_ao'][1]
@@ -455,8 +455,25 @@ def create_bullet_graph(data):
     data = np.transpose(data).iloc[:, 0]
     values = np.array(data)
     signals = signal_indicator(close, values, macd_signal, ao_prev)
-    total_buy = ((1.5 * signals.count('SELL')) + (2 * signals.count('STRONG SELL')) + 
-                    signals.count('NEUTRAL'))/(len(signals)) #Need to change this, for initialization only
+#    total_buy = ((1.5 * signals.count('SELL')) + (2 * signals.count('STRONG SELL')) + 
+#                    signals.count('NEUTRAL'))/(len(signals)) #Need to change this, for initialization only
+    
+    signals_value = []
+    for sig in signals:
+        if sig == 'STRONG BUY':
+            signals_value.append(0.0)
+        elif sig == 'BUY':
+            signals_value.append(0.25)
+        elif sig == 'NEUTRAL':
+            signals_value.append(0.5)
+        elif sig == 'SELL':
+            signals_value.append(0.75)
+        elif sig == 'STRONG SELL':
+            signals_value.append(1.0)
+    
+    weights = np.array(weights)
+    signals_value = np.array(signals_value)
+    weighted_signals = weights@signals_value/np.sum(weights)
 
     fig = go.Figure(go.Indicator(
         mode = 'number+gauge',
@@ -465,14 +482,14 @@ def create_bullet_graph(data):
                  'threshold' : {
                      'line' : {'color': 'black', 'width': 3},
                      'thickness' : 0.75,
-                     'value' : total_buy},
+                     'value' : weighted_signals},
                  'steps': [
                      {'range' : [0, 0.2], 'color': 'greenyellow'},
                      {'range' : [0.2, 0.4], 'color': 'khaki'},
                      {'range' : [0.4, 0.6], 'color': 'ivory'},
                      {'range' : [0.6, 0.8], 'color': 'darkred'},
                      {'range' : [0.8, 1], 'color': 'maroon'}]},
-        value = total_buy,
+        value = weighted_signals,
         domain = {'x': [0, 0], 'y': [0, 0]}))
     
     fig.add_annotation(x = 0, y = 1.4,
@@ -1013,3 +1030,18 @@ layer_6 = html.Div(
     ],
     # style={'width':'100%'}
 )
+
+def create_slider(id):
+    slider = dcc.Slider(id=id, min=0, max=1.0, step=0.1, value=0.5)
+    return slider
+    
+sliders = html.Div([
+    create_slider('cci'),
+    create_slider('rsi'),
+    create_slider('k_avg'),
+    create_slider('sma'),
+    create_slider('ema'),
+    create_slider('macd'),
+    create_slider('awesome'),
+    create_slider('ultimate'),
+])
