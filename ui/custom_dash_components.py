@@ -1034,7 +1034,7 @@ layer_6 = html.Div(
 )
 
 def create_slider(id):
-    slider = dcc.Slider(id=id, min=0, max=1.0, step=0.1, value=0.5)
+    slider = dcc.Slider(id=id, min=0, max=1.0, step=0.01, value=0.5)
     return slider
     
 sliders = html.Div([
