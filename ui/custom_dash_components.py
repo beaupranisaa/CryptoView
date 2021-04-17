@@ -376,7 +376,7 @@ def create_gauge_rsi_indicator(data):
      
 
 bullet_graph = dcc.Graph(id = 'bullet-indicator',
-        style = {'width': '60%',
+        style = {'width': '100%',
                  'paddingBottom': 0,
                  'paddingTop' : 0,
                  'marginTop': 0,
@@ -546,7 +546,7 @@ techindicator_summary = html.Div(dash_table.DataTable(
     editable = False,
     style_header = {'background_color': colors['background'],
                     'font-family': 'Helvetica',
-                    'font-size': '120%',
+                    'font-size': '175%',
                     'fontWeight': 'bold',
                     'textAlign': 'center',
                     'marginTop': 0,
@@ -563,6 +563,7 @@ techindicator_summary = html.Div(dash_table.DataTable(
     style_cell = {'minWidt': 100, 
                   'width': 110,
                   'maxWidt': 300,
+                  'font-size' : '160%',
                   'font-family': 'Helvetica',
                   'backgroundColor': 'firebrick',
                   'color': colors['text'],
@@ -581,7 +582,8 @@ techindicator_summary = html.Div(dash_table.DataTable(
         }]
     ), 
     style={ 'width': '35%', 
-            'display': 'inline'})
+            'order':1, 
+            'height':370})
 
 def indicators_table(data):
     close = data['close'][0]
@@ -600,7 +602,7 @@ def indicators_table(data):
     df = df.to_dict('records')
     return df
 
-technicals = html.Div(children = [bullet_graph, techindicator_summary], 
+technicals = html.Div(children = [bullet_graph], 
             style={'width': '100%', 'display': 'flex'})
 
 
@@ -1044,4 +1046,16 @@ sliders = html.Div([
     create_slider('macd'),
     create_slider('awesome'),
     create_slider('ultimate'),
-])
+], style = {'order':2,
+            'width':'60%',
+            'margin-top':'auto',
+            'margin-left':'auto'
+}
+)
+
+weighing_layer = html.Div([
+    techindicator_summary,
+    sliders
+], style = {'width':'100%',
+            'display':'flex'
+})

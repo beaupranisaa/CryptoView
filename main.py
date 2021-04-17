@@ -33,7 +33,7 @@ app.layout = html.Div(style = {'backgroundColor': colors['background'],
                       children = [minute_interval, 
                                 layer_1, tabs, layer_3, selection_tabs,
                                 layer_4,day_interval, title_indicators, gauge_indicator, 
-                                technicals, sliders, layer_6, storage_div ])
+                                technicals, weighing_layer, layer_6, storage_div ])
 
 @app.callback(
     Output('ohlc', 'figure'),
