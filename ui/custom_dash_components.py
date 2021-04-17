@@ -65,7 +65,9 @@ number_indicator = dcc.Graph(id='num-indicator',
         figure={
         'layout': go.Layout(
             paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)', height =200)})
+            plot_bgcolor='rgba(0,0,0,0)', height =200,
+            width=900,
+            )})
 
 def create_market_change_indicator(data):
     ''' 
@@ -80,20 +82,29 @@ def create_market_change_indicator(data):
         title = 'Closing Price',
         mode = "number+delta",
         value = current_data['close'],
-        domain = {'x': [0, 0.5], 'y': [0, 0]},
+        domain = {'x': [0, 0.33], 'y': [0, 0]},
         delta = {'reference': previous_data['close'], 'relative': True, 'position' : "bottom"},
-        number={"font":{"size":60}},
+        number={"font":{"size":60},'prefix':"$"},
         ))
     
     fig.add_trace(go.Indicator(
-        title = 'Volume',
+        title = 'Dollar Volume',
+        mode = "number+delta",
+        value = current_data['volume']*current_data['close'],
+        domain = {'x': [0.33, 0.66], 'y': [0, 0]},
+        delta = {'reference': previous_data['volume']*previous_data['close'], 'relative': True, 'position' : "bottom"},
+        number={"font":{"size":60},'prefix':"$"},
+        ))
+    
+    fig.add_trace(go.Indicator(
+        title = 'Trading Volume',
         mode = "number+delta",
         value = current_data['volume'],
-        domain = {'x': [0.5, 1.0], 'y': [0, 0]},
+        domain = {'x': [0.66, 1.0], 'y': [0, 0]},
         delta = {'reference': previous_data['volume'], 'relative': True, 'position' : "bottom"},
         number={"font":{"size":60}},
         ))
-    
+
     fig.update_layout(
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
@@ -265,11 +276,23 @@ selection_tabs = html.Div(id = 'selection',
                                 'width' : 1500},
                       children = [graph_title, graph_tabs, timeframe_title, timeframe_tabs,stat_title,stat_choice])
 
-title_indicators = html.H6 (children = 'Technical Indicators', 
+title_indicators = html.H6 (children = 'TECHNICAL INDICATORS', 
                 style = {'textAlign': 'center', 
                         'color': colors['text'], 
                         'font-family': 'Helvetica', 
-                        'font-size': '25px',
+                        'font-size': '30px',
+                        'font-weight': 9000,
+                        'paddingTop':10,
+                        'paddingBottom':0,
+                        'paddingLeft':30,
+                        'marginTop':0,
+                        'marginBottom':0})
+
+title_confluence = html.H6 (children = 'CONFLUENCE', 
+                style = {'textAlign': 'center', 
+                        'color': colors['text'], 
+                        'font-family': 'Helvetica', 
+                        'font-size': '30px',
                         'font-weight': 9000,
                         'paddingTop':10,
                         'paddingBottom':0,
@@ -516,13 +539,13 @@ def create_bullet_graph(data, weights):
                 size = 18
             ))
 
-    fig.add_annotation(x = 0, y = 1.9,
-            text = "CONFLUENCE",
-            showarrow = False,
-            font = dict(
-                family = 'Helvetica',
-                size = 30
-            ))
+#    fig.add_annotation(x = 0, y = 1.9,
+#            text = "CONFLUENCE",
+#            showarrow = False,
+#            font = dict(
+#                family = 'Helvetica',
+#                size = 30
+#            ))
 
     fig.update_layout(
         paper_bgcolor = colors['background'],
@@ -956,9 +979,9 @@ def market_summary_figure(data):
     return fig
 
 coin_logo_title = html.Div(html.Img(id='coin-logo-title',src=app.get_asset_url('img/BTC.png'),
-        style={'height':'40px', 
-                'width':'40px',}),
-    style = {'order':1,'align-self':'center','paddingLeft':100 }
+        style={'height':'50px', 
+                'width':'50px',}),
+    style = {'order':1,'align-self':'center','paddingLeft':150 }
 )
 
 coin_name_title = html.Div(
