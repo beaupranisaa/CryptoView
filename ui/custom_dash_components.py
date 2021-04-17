@@ -61,7 +61,7 @@ tabs = dcc.Tabs(id = 'coin-tabs', value = symbols[0],
                 'paddingRight': "30px"})
 
 number_indicator = dcc.Graph(id='num-indicator', 
-        style = {'float':'right','marginRight':'30px'},
+        style = {'order':3,'marginRight':'30px','margin-left':'auto'},
         figure={
         'layout': go.Layout(
             paper_bgcolor='rgba(0,0,0,0)',
@@ -958,12 +958,11 @@ def market_summary_figure(data):
 coin_logo_title = html.Div(html.Img(id='coin-logo-title',src=app.get_asset_url('img/BTC.png'),
         style={'height':'40px', 
                 'width':'40px',}),
-    style = {'height':'100%','display':'inline','paddingLeft':100 }
+    style = {'order':1,'align-self':'center','paddingLeft':100 }
 )
 
 coin_name_title = html.Div(
     html.Div(children = [
-        coin_logo_title, 
         html.H1(children = 'Bitcoin', id = 'coin-name-title',
                 style = {'textAlign': 'left', 
                         'color': colors['text'], 
@@ -975,12 +974,11 @@ coin_name_title = html.Div(
                         'paddingLeft':60,
                         'marginTop':0,
                         'marginBottom':0,
-                        'display':'inline'
                         }),
         ],
         style = {'vertical-align':'middle','display':'table-cell'}
     ),
-    style = {'float':'left','height': 200,'display':'table'}
+    style = {'order':2,'align-self':'center','height': 200,'display':'table'}
 )
 
 logo = html.Img(id='logo',src=app.get_asset_url('img/logo.png'),
@@ -997,8 +995,8 @@ layer_1 = html.Div(id = 'layer-1', children = [
 })
 
 layer_3 = html.Div(id = 'layer-3', children = [
-    coin_name_title, number_indicator
-],style = {'display':'inline-block','width':'100%'})
+    coin_logo_title, coin_name_title, number_indicator
+],style = {'display':'flex','width':'100%'})
 
 debug_text = html.H3(id = 'debug-text',children = 'hi', 
                 style = {'textAlign': 'left', 
