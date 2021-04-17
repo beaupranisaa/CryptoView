@@ -424,9 +424,9 @@ def signal_indicator(close, values, macd_signal, ao_prev):
         signal_ema = 'SELL'
     
     if values[5] > macd_signal:
-        signal_macd = 'SELL'
-    elif values[5] < macd_signal:
         signal_macd = 'BUY'
+    elif values[5] < macd_signal:
+        signal_macd = 'SELL'
     else:
         signal_macd = 'NEUTRAL'
 
