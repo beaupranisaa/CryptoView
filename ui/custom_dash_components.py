@@ -1,5 +1,6 @@
 import dash_html_components as html
 import dash_core_components as dcc
+import dash_bootstrap_components as dbc
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 import data_handler
@@ -20,7 +21,9 @@ from io import BytesIO
 from IPython.display import HTML
 
 # Create the app
-app = dash.Dash()
+external_stylesheets = [dbc.themes.BOOTSTRAP]
+app = dash.Dash(external_stylesheets=external_stylesheets)
+# app = dash.Dash()
 
 coins = ['Bitcoin','Ethereum', "Ripple", "Dogecoin", 'Tezos','Litecoin','EOS','Binance', 'BTC Cash']
 symbols = ["BTCUSDT", "ETHUSDT", "XRPUSDT", "DOGEUSDT", "XTZUSDT", "LTCUSDT", "EOSUSDT", "BNBUSDT", "BCHUSDT"]
@@ -58,11 +61,13 @@ tabs = dcc.Tabs(id = 'coin-tabs', value = symbols[0],
                 'paddingRight': "30px"})
 
 number_indicator = dcc.Graph(id='num-indicator', 
-        style = {'float':'right','marginRight':'30px'},
+        style = {'order':3,'marginRight':'30px','margin-left':'auto'},
         figure={
         'layout': go.Layout(
             paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)', height =200)})
+            plot_bgcolor='rgba(0,0,0,0)', height =200,
+            width=900,
+            )})
 
 def create_market_change_indicator(data):
     ''' 
@@ -77,20 +82,29 @@ def create_market_change_indicator(data):
         title = 'Closing Price',
         mode = "number+delta",
         value = current_data['close'],
-        domain = {'x': [0, 0.5], 'y': [0, 0]},
+        domain = {'x': [0, 0.33], 'y': [0, 0]},
         delta = {'reference': previous_data['close'], 'relative': True, 'position' : "bottom"},
-        number={"font":{"size":60}},
+        number={"font":{"size":60},'prefix':"$"},
         ))
     
     fig.add_trace(go.Indicator(
-        title = 'Volume',
+        title = 'Dollar Volume',
+        mode = "number+delta",
+        value = current_data['volume']*current_data['close'],
+        domain = {'x': [0.33, 0.66], 'y': [0, 0]},
+        delta = {'reference': previous_data['volume']*previous_data['close'], 'relative': True, 'position' : "bottom"},
+        number={"font":{"size":60},'prefix':"$"},
+        ))
+    
+    fig.add_trace(go.Indicator(
+        title = 'Trading Volume',
         mode = "number+delta",
         value = current_data['volume'],
-        domain = {'x': [0.5, 1.0], 'y': [0, 0]},
+        domain = {'x': [0.66, 1.0], 'y': [0, 0]},
         delta = {'reference': previous_data['volume'], 'relative': True, 'position' : "bottom"},
         number={"font":{"size":60}},
         ))
-    
+
     fig.update_layout(
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
@@ -262,11 +276,23 @@ selection_tabs = html.Div(id = 'selection',
                                 'width' : 1500},
                       children = [graph_title, graph_tabs, timeframe_title, timeframe_tabs,stat_title,stat_choice])
 
-title_indicators = html.H6 (children = 'Technical Indicators', 
+title_indicators = html.H6 (children = 'TECHNICAL INDICATORS', 
                 style = {'textAlign': 'center', 
                         'color': colors['text'], 
                         'font-family': 'Helvetica', 
-                        'font-size': '25px',
+                        'font-size': '30px',
+                        'font-weight': 9000,
+                        'paddingTop':10,
+                        'paddingBottom':0,
+                        'paddingLeft':30,
+                        'marginTop':0,
+                        'marginBottom':0})
+
+title_confluence = html.H6 (children = 'CONFLUENCE', 
+                style = {'textAlign': 'center', 
+                        'color': colors['text'], 
+                        'font-family': 'Helvetica', 
+                        'font-size': '30px',
                         'font-weight': 9000,
                         'paddingTop':10,
                         'paddingBottom':0,
@@ -298,7 +324,21 @@ def create_gauge_rsi_indicator(data):
             {'range': [0, 20], 'color': "lightgray"},
             {'range': [80, 100], 'color': 'darkred'}],
             'threshold' : {'line': {'color': "orange", 'width': 4}, 'thickness': 0.75, 'value': current_data['momentum_rsi']}}))
-    
+
+    fig.add_annotation(x = 0.03, y = -0.15,
+            text = 'BUY',
+            showarrow = False,
+            font = dict(
+                family = 'Helvetica',
+                size = 18))
+
+    fig.add_annotation(x = 0.239, y = -0.15,
+            text = 'SELL',
+            showarrow = False,
+            font = dict(
+                family = 'Helvetica',
+                size = 18))
+
     fig.add_trace(go.Indicator(
         domain = {'x': [0.32, 0.7], 'y': [0, 0]},
         value = current_data['trend_cci'],
@@ -307,24 +347,50 @@ def create_gauge_rsi_indicator(data):
         delta = {'reference': previous_data['trend_cci']},
         gauge = {'axis': {'range': [-200, 200]},
         'steps' : [
-            {'range': [-200, -150], 'color': 'white'},
-            {'range': [-150, -100], 'color': 'lightgray'},
-            {'range': [100, 150], 'color': 'firebrick'},
-            {'range': [150, 200], 'color': 'darkred'}],
+            {'range': [-200, -100], 'color': 'lightgray'},
+            {'range': [100, 200], 'color': 'darkred'}],
             'threshold': {'line': {'color': 'orange', 'width': 4}, 'thickness': 0.75, 'value': current_data['trend_cci']}}))
+
+    fig.add_annotation(x = 0.405, y = -0.15,
+            text = 'BUY',
+            showarrow = False,
+            font = dict(
+                family = 'Helvetica',
+                size = 18))
+
+    fig.add_annotation(x = 0.614, y = -0.15,
+            text = 'SELL',
+            showarrow = False,
+            font = dict(
+                family = 'Helvetica',
+                size = 18))
 
     fig.add_trace(go.Indicator(
         domain = {'x': [0.75, 1], 'y': [0, 0]},
-        value = current_data['momentum_kama'],
+        value = current_data['momentum_uo'],
         mode = 'gauge+number+delta',
-        title = {'text': 'Moving Averages'},
-        delta = {'reference': previous_data['momentum_kama']},
-        gauge = {'axis': {'range': [None, data['close'].max()]},
+        title = {'text': 'Ultimate Oscillator'},
+        delta = {'reference': previous_data['momentum_uo']},
+        gauge = {'axis': {'range': [None, 100]},
         'steps' : [
-            {'range': [0, 0.25*data['close'].max()], 'color': 'lightgray'},
-            {'range': [0.75*data['close'].max(), data['close'].max()], 'color': 'darkred'}],
-            'threshold': {'line': {'color': 'yellow', 'width': 4}, 'thickness': 0.75, 'value': current_data['momentum_kama']}}))
+            {'range': [0, 30], 'color': 'lightgray'},
+            {'range': [70, 100], 'color': 'darkred'}],
+            'threshold': {'line': {'color': 'yellow', 'width': 4}, 'thickness': 0.75, 'value': current_data['momentum_uo']}}))
 
+    fig.add_annotation(x = 0.785, y = -0.15,
+            text = 'BUY',
+            showarrow = False,
+            font = dict(
+                family = 'Helvetica',
+                size = 18))
+
+    fig.add_annotation(x = 0.995, y = -0.15,
+            text = 'SELL',
+            showarrow = False,
+            font = dict(
+                family = 'Helvetica',
+                size = 18))
+    
     fig.update_layout( 
         paper_bgcolor = colors['background'],
         plot_bgcolor = colors['background'],
@@ -332,41 +398,30 @@ def create_gauge_rsi_indicator(data):
     return fig
      
 
-title_summary = html.H6(children = 'Summary', 
-                style = {'textAlign': 'center', 
-                        'color': colors['text'], 
-                        'font-family': 'Helvetica', 
-                        'font-size': '25px',
-                        'paddingTop': 0,
-                        'paddingBottom':0,
-                        'paddingLeft':30,
-                        'marginTop':0,
-                        'marginBottom':0}) 
-
 bullet_graph = dcc.Graph(id = 'bullet-indicator',
-        style = {'width': '75%',
+        style = {'width': '100%',
                  'paddingBottom': 0,
                  'paddingTop' : 0,
                  'marginTop': 0,
                  'marginBottom':0,
-                 'display': 'block'},
+                 'display': 'flex'},
         figure = {
             'layout': go.Layout(
                 paper_bgcolor = 'rgba(0,0,0,0)',
                 plot_bgcolor = 'rgba(0,0,0,0)',
                 height = 250)})
 
-def signal_indicator(close, values, macd_signal):
+
+def signal_indicator(close, values, macd_signal, ao_prev):
     if values[0] > 100 and values[0] < 150:
         signal_cci = 'SELL'
-    elif values[0] == 100:
-        signal_cci = 'OVERBOUGHT'
-    elif values[0] == -100:
-        signal_cci = 'OVERSOLD'
+    elif values[0] < -100 and values[0] > -200:
+        signal_cci = 'BUY'
     elif values[0] >= 150:
         signal_cci = 'STRONG SELL'
     else: 
-        signal_cci = 'BUY'
+        signal_cci = 'NEUTRAL'
+
     if values[1] > 0 and values[1] < 20:
         signal_rsi = 'BUY'
     elif values[1] > 80 and values[1] < 100:
@@ -384,50 +439,120 @@ def signal_indicator(close, values, macd_signal):
     if values[3] or values[4] > close:
         signal_sma = 'BUY'
         signal_ema = 'BUY'
+    elif values[3] == close and values[4] == close:
+        signal_sma = 'NEUTRAL'
+        signal_ema = 'NEUTRAL'
     else:
         signal_sma = 'SELL'
-        signal_sma = 'SELL'
+        signal_ema = 'SELL'
     
     if values[5] > macd_signal:
-        signal_macd = 'BUY'
-    elif values[5] < macd_signal:
         signal_macd = 'SELL'
+    elif values[5] < macd_signal:
+        signal_macd = 'BUY'
     else:
         signal_macd = 'NEUTRAL'
-    signals = [signal_cci, signal_rsi, signal_kama, signal_sma, signal_ema, signal_macd] 
+
+    if ao_prev < values[6]: 
+        signal_awesome = 'BUY'
+    elif ao_prev > values[6]: 
+        signal_awesome = 'SELL'
+    else:
+        signal_awesome = 'NEUTRAL'
+
+    if values[7] > 0 and values[7] <= 30:
+        signal_ultimate = 'BUY'
+    elif values[7] >= 70:
+        signal_ultimate = 'SELL'
+    else:
+        signal_ultimate = 'NEUTRAL'
+    signals = [signal_cci, signal_rsi, signal_kama, signal_sma, 
+                        signal_ema, signal_macd, signal_awesome, signal_ultimate] 
     return signals
 
-def create_bullet_graph(data):
+def create_bullet_graph(data, weights):
     close = data['close'][0]
     macd_signal = data['trend_macd_signal'][0]
-    data = np.round(data[['trend_cci', 'momentum_rsi', 'momentum_kama', 'trend_sma_fast', 'trend_ema_fast', 'trend_macd']], 2)
+    ao_prev = data['momentum_ao'][1]
+    data = np.round(data[['trend_cci', 'momentum_rsi', 'momentum_kama', 'trend_sma_fast', 'trend_ema_fast', 'trend_macd', 'momentum_ao', 'momentum_uo']], 2)
     data = np.transpose(data).iloc[:, 0]
     values = np.array(data)
-    signals = signal_indicator(close, values, macd_signal)
-    total_buy = (signals.count('SELL') + signals.count('STRONG SELL'))/(len(signals) + 1)
+    signals = signal_indicator(close, values, macd_signal, ao_prev)
+#    total_buy = ((1.5 * signals.count('SELL')) + (2 * signals.count('STRONG SELL')) + 
+#                    signals.count('NEUTRAL'))/(len(signals)) #Need to change this, for initialization only
+    
+    signals_value = []
+    for sig in signals:
+        if sig == 'STRONG BUY':
+            signals_value.append(0.0)
+        elif sig == 'BUY':
+            signals_value.append(0.25)
+        elif sig == 'NEUTRAL':
+            signals_value.append(0.5)
+        elif sig == 'SELL':
+            signals_value.append(0.75)
+        elif sig == 'STRONG SELL':
+            signals_value.append(1.0)
+    
+    weights = np.array(weights)
+    signals_value = np.array(signals_value)
+    weighted_signals = weights@signals_value/np.sum(weights)
 
     fig = go.Figure(go.Indicator(
         mode = 'number+gauge',
         gauge = {'shape': 'bullet',
                  'axis' : {'range' : [0, 1]},
                  'threshold' : {
-                     'line' : {'color': 'gold', 'width': 3},
+                     'line' : {'color': 'black', 'width': 3},
                      'thickness' : 0.75,
-                     'value' : total_buy},
+                     'value' : weighted_signals},
                  'steps': [
                      {'range' : [0, 0.2], 'color': 'greenyellow'},
                      {'range' : [0.2, 0.4], 'color': 'khaki'},
                      {'range' : [0.4, 0.6], 'color': 'ivory'},
                      {'range' : [0.6, 0.8], 'color': 'darkred'},
                      {'range' : [0.8, 1], 'color': 'maroon'}]},
-        value = total_buy,
-        domain = {'x': [0.5, 0], 'y': [0, 0]}))
-        
+        value = weighted_signals,
+        domain = {'x': [0, 0], 'y': [0, 0]}))
+    
+    fig.add_annotation(x = 0, y = 1.4,
+            text = "BUY",
+            showarrow = False,
+            font = dict(
+                family = 'Helvetica',
+                size = 18
+            ))
+
+    fig.add_annotation(x = 0.375, y = 1.4,
+            text = "NEUTRAL",
+            showarrow = False,
+            font = dict(
+                family = 'Helvetica',
+                size = 18
+            ))
+
+    fig.add_annotation(x = 0.75, y = 1.4,
+            text = "SELL",
+            showarrow = False,
+            font = dict(
+                family = 'Helvetica',
+                size = 18
+            ))
+
+#    fig.add_annotation(x = 0, y = 1.9,
+#            text = "CONFLUENCE",
+#            showarrow = False,
+#            font = dict(
+#                family = 'Helvetica',
+#                size = 30
+#            ))
+
     fig.update_layout(
         paper_bgcolor = colors['background'],
         plot_bgcolor = colors['background'],
         font = {'color': colors['text'], 'family': 'Helvetica'})
     return fig
+
 
 day_interval = dcc.Interval(
         id='d-interval-component',
@@ -437,9 +562,6 @@ day_interval = dcc.Interval(
 indicators = ['Indicators', '24H Values', '24H Signals']
 indicators_col_name = ["Indicators","24H Values", "24H Signals"]
 
-type = ['string', 'numeric', 'string']
-buy = 'BUY'
-sell = 'SELL'
 techindicator_summary = html.Div(dash_table.DataTable(
     id = 'indicators-table',
     columns = [{"name" : indicators_col_name[i], "id":col, 
@@ -447,7 +569,7 @@ techindicator_summary = html.Div(dash_table.DataTable(
     editable = False,
     style_header = {'background_color': colors['background'],
                     'font-family': 'Helvetica',
-                    'font-size': '120%',
+                    'font-size': '175%',
                     'fontWeight': 'bold',
                     'textAlign': 'center',
                     'marginTop': 0,
@@ -464,6 +586,7 @@ techindicator_summary = html.Div(dash_table.DataTable(
     style_cell = {'minWidt': 100, 
                   'width': 110,
                   'maxWidt': 300,
+                  'font-size' : '160%',
                   'font-family': 'Helvetica',
                   'backgroundColor': 'firebrick',
                   'color': colors['text'],
@@ -474,21 +597,27 @@ techindicator_summary = html.Div(dash_table.DataTable(
             'if': {'filter_query': '{24H Signals} eq "BUY" or {24H Signals} eq "STRONG BUY"'},
             'backgroundColor': '#556B2F',
             'color': 'white'
+        },
+        {
+            'if': {'filter_query': '{24H Signals} eq "NEUTRAL"'},
+            'backgroundColor': 'dodgerblue',
+            'color': 'white'
         }]
     ), 
     style={ 'width': '35%', 
-            'display': 'block'})
+            'order':1, 
+            'height':370})
 
 def indicators_table(data):
     close = data['close'][0]
     macd_signal = data['trend_macd_signal'][0]
-
-    data = np.round(data[['trend_cci', 'momentum_stoch_rsi', 'momentum_kama', 'trend_sma_fast', 'trend_ema_fast', 'trend_macd']], 2)
+    ao_prev = data['momentum_ao'][1]
+    data = np.round(data[['trend_cci', 'momentum_rsi', 'momentum_kama', 'trend_sma_fast', 'trend_ema_fast', 'trend_macd', 'momentum_ao', 'momentum_uo']], 2)
     data = np.transpose(data).iloc[:, 0]
     values = np.array(data)
-    signals = signal_indicator(close, values, macd_signal)
-    indicators = ['Trend CCI', 'Stochastic RSI', 'Kaufmans Average', 'Simple MA', 'Exponential MA', 'MACD']
-    columns = ['Indicators', '24H Values', '24H Signals',  'Simple MA', 'Exponential MA', 'MACD']
+    signals = signal_indicator(close, values, macd_signal, ao_prev)
+    indicators = ['Trend CCI', 'Relative Strength', 'Kaufmans Average', 'Simple MA', 'Exponential MA', 'MACD', 'Awesome Oscillator', 'Ultimate Oscillator']
+    columns = ['Indicators', '24H Values', '24H Signals',  'Simple MA', 'Exponential MA', 'MACD', 'Awesome Oscillator', 'Ultimate Oscillator']
     df = pd.DataFrame(data = [indicators, values, signals], columns = columns)
     df = np.transpose(df)
     df = df.reset_index(drop = True)
@@ -496,16 +625,20 @@ def indicators_table(data):
     df = df.to_dict('records')
     return df
 
+technicals = html.Div(children = [bullet_graph], 
+            style={'width': '100%', 'display': 'flex'})
+
 
 toppers = ["gainer","gainer_perc", "loser","loser_perc"]
-col_name = ["24h GAINER","","24h LOSER",""]
-col_colours = ['#008000','#FF0000']
+col_name = ["24h GAINER","24h GAINER","24h LOSER","24h LOSER"]
+col_colours = ['#205304','firebrick']
 
-toppers_table = dash_table.DataTable(
+toppers_table = html.Div(dash_table.DataTable(
     id='Topper',
     columns=[{"name" : col_name[i],
               "id":col, 
             "type": "numeric",
+
             } 
             for i,col in enumerate(toppers)],
     style_header = {'backgroundColor': '#000022',
@@ -513,20 +646,17 @@ toppers_table = dash_table.DataTable(
                     'font-size':"120%",
                     'color':"#DADBFE",
                     'fontWeight': 'bold',
-                    'paddingRight':100,
-                    'marginTop':0,
-                    'marginBottom':0,
                     'border': '0px',
-                    'text-align': 'center',
+                    'textAlign': 'center',
                     },
-    style_table = {'width':'10px'},
-    style_cell={'minWidt': 95, 
-                'width': 95, 
-                'maxWidth': 140,
-                'font-family': 'Helvetica',
-                'backgroundColor': '#000022',
-                'color': '#DADBFE',
-                'text-align': 'center'},
+    style_table = {'width': '10px',
+                   'paddingLeft': 50,
+                   'paddingTop': 40},
+    style_cell = {'minWidth': '180px', 'width': '180px', 'maxWidth': '180px',
+                  'font-family': 'Helvetica',
+                  'backgroundColor': '#000022',
+                  'color': '#DADBFE',
+                  'text-align': 'center'},
     style_data={ 'border': '5px solid #000022'},
     style_data_conditional=([ {'if': {'column_id': c},
                                     'backgroundColor': col_colours[i],
@@ -537,45 +667,62 @@ toppers_table = dash_table.DataTable(
                                     'fontWeight': 'bold'
                              } for i,c in enumerate(["gainer_perc","loser_perc"])
      ]),
+    merge_duplicate_headers=True
+    ),
+    style = {'display':'flex',
+            'paddingTop': 10}
     )
-
 market_sum = ["coin","close", "open","volume"]
-market_sum_col_name = ["","close", "open","volume"]
-
-market_summary_table = dash_table.DataTable(
+market_sum_col_name = ["Market Summary","Market Summary","Market Summary","Market Summary"]
+market_col_colours = ['#FFFF00','#0000FF','#FFA500']
+market_summary_table = html.Div(dash_table.DataTable(
     id='market_summary',
     columns=[{"name" : market_sum_col_name[i],
               "id":col, 
             "type": "numeric",
             } 
             for i,col in enumerate(market_sum)],
+    merge_duplicate_headers = True,
     style_header = {'backgroundColor': '#000022',
                     'font-family': 'Helvetica',
                     'font-size':"120%",
                     'color':"#DADBFE",
                     'fontWeight': 'bold',
-                    'paddingRight':75,
-                    'marginTop':0,
-                    'marginBottom':0,
                     'border': '0px',
-                    'textAlign': 'center',
+                    'textAlign':"center",
                     },
-    style_table = {'width':'10px'},
-    style_cell={'minWidt': 95, 
-                'width': 95, 
-                'maxWidth': 140,
+    style_table = {'width':'10px',
+                   'display':'inline-block'},
+    style_cell={'minWidth': '180px', 'width': '180px', 'maxWidth': '180px',
                 'font-family': 'Helvetica',
                 'font-weight': 'bold',
                 'backgroundColor': '#000022',
                 'color': '#DADBFE',
                 'textAlign': 'center'},
-    style_data={ 'border': '5px solid #000022'}
+    style_data={ 'border': '10px solid #000022'},
+    style_data_conditional=([ {'if': {'column_id': c,'row_index': 0},
+                                    'color': market_col_colours[i],
+                                    'fontWeight': 'bold'
+                             } for i,c in enumerate(["close","open","volume"])
+     ]),
+    ),
+    style = {'display':'flex',
+             'paddingTop': 10}
     )
 
-market_summary_icon = html.Div(id = 'market_icon')
+market_summary_icon = html.Div(html.Div(id = 'market_icon'),
+        style = {'display':'flex',
+                 'paddingLeft': 500,
+                 'paddingTop': 95}
+        )
 
-market_summary_graph = dcc.Graph(id='market_graph', 
-        style = {'display': 'inline-block', 'width': '100%'},
+market_summary_graph = html.Div(dcc.Graph(id='market_graph', 
+        config = {'displayModeBar': False},
+        style = {'display': 'flex', 
+                 'width': '100%',
+                 'margin_bottom':'5px',
+                 'paddingRight': 200,
+                 'paddingBottom': 500},
         figure={
         'layout': go.Layout(
             paper_bgcolor='rgba(0,0,0,0)',
@@ -583,7 +730,12 @@ market_summary_graph = dcc.Graph(id='market_graph',
             height = 250,
             width = 200
             )}
+        ),
+        style = {'display':'flex',
+                 'paddingLeft': 100,
+                 'paddingBottom': 150}
         )
+    
 
 def create_ohlc(df_ohlc, graph_name, time_tabs_name, coin_tab_name, stat_name):
     timestamp_dict = {  '1m':df_ohlc.index.strftime("%H:%M %d/%m/%Y"),
@@ -766,6 +918,12 @@ def topper_rank(data):
 def market_summary(data):
     sorted_coin = sort_coin(data, 'volume')
     ranks = []
+    rank_top = {}
+    rank_top['coin'] = ''
+    rank_top['close'] = 'Close'
+    rank_top['open'] = 'Open'
+    rank_top['volume'] = 'Volume'
+    ranks.append(rank_top)
     for i in range(3):
         rank = {}
         rank['coin'] = sorted_coin[i]['coins']
@@ -821,14 +979,13 @@ def market_summary_figure(data):
     return fig
 
 coin_logo_title = html.Div(html.Img(id='coin-logo-title',src=app.get_asset_url('img/BTC.png'),
-        style={'height':'40px', 
-                'width':'40px',}),
-    style = {'height':'100%','display':'inline','paddingLeft':100 }
+        style={'height':'50px', 
+                'width':'50px',}),
+    style = {'order':1,'align-self':'center','paddingLeft':150 }
 )
 
 coin_name_title = html.Div(
     html.Div(children = [
-        coin_logo_title, 
         html.H1(children = 'Bitcoin', id = 'coin-name-title',
                 style = {'textAlign': 'left', 
                         'color': colors['text'], 
@@ -840,12 +997,11 @@ coin_name_title = html.Div(
                         'paddingLeft':60,
                         'marginTop':0,
                         'marginBottom':0,
-                        'display':'inline'
                         }),
         ],
         style = {'vertical-align':'middle','display':'table-cell'}
     ),
-    style = {'float':'left','height': 200,'display':'table'}
+    style = {'order':2,'align-self':'center','height': 200,'display':'table'}
 )
 
 logo = html.Img(id='logo',src=app.get_asset_url('img/logo.png'),
@@ -862,8 +1018,8 @@ layer_1 = html.Div(id = 'layer-1', children = [
 })
 
 layer_3 = html.Div(id = 'layer-3', children = [
-    coin_name_title, number_indicator
-],style = {'display':'inline-block','width':'100%'})
+    coin_logo_title, coin_name_title, number_indicator
+],style = {'display':'flex','width':'100%'})
 
 debug_text = html.H3(id = 'debug-text',children = 'hi', 
                 style = {'textAlign': 'left', 
@@ -882,3 +1038,45 @@ storage_div = html.Div(id='storage', style={'display': 'none'})
 layer_4 = html.Div(id = 'layer-4', children = [
     ohlc_graph
 ],style = {'display':'inline-block','width':'100%'})
+
+layer_6 = html.Div(
+    [
+        dbc.Row(
+            [
+                dbc.Col(toppers_table, style={'width':'200%'}),
+                dbc.Col(market_summary_icon),
+                dbc.Col(market_summary_table),
+                dbc.Col(market_summary_graph),
+            ],
+            style={'display':'flex'}
+        ),
+    ],
+    # style={'width':'100%'}
+)
+
+def create_slider(id):
+    slider = dcc.Slider(id=id, min=0, max=1.0, step=0.01, value=0.5)
+    return slider
+    
+sliders = html.Div([
+    create_slider('cci'),
+    create_slider('rsi'),
+    create_slider('k_avg'),
+    create_slider('sma'),
+    create_slider('ema'),
+    create_slider('macd'),
+    create_slider('awesome'),
+    create_slider('ultimate'),
+], style = {'order':2,
+            'width':'60%',
+            'margin-top':'auto',
+            'margin-left':'auto'
+}
+)
+
+weighing_layer = html.Div([
+    techindicator_summary,
+    sliders
+], style = {'width':'100%',
+            'display':'flex'
+})
