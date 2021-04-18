@@ -15,6 +15,7 @@ import random
 import base64
 import pandas as pd
 import dash
+import dash_daq as daq
 
 from PIL import Image
 from io import BytesIO
@@ -27,9 +28,10 @@ app = dash.Dash(external_stylesheets=external_stylesheets)
 
 coins = ['Bitcoin','Ethereum', "Ripple", "Dogecoin", 'Tezos','Litecoin','EOS','Binance', 'BTC Cash']
 symbols = ["BTCUSDT", "ETHUSDT", "XRPUSDT", "DOGEUSDT", "XTZUSDT", "LTCUSDT", "EOSUSDT", "BNBUSDT", "BCHUSDT"]
-coin_names = {"BTCUSDT": "BITCOIN", "ETHUSDT":"ETHEREUM","XRPUSDT":"RIPPLE","DOGEUSDT":"DOGECOIN","XTZUSDT":"TEZOS","LTCUSDT":"LITECOIN","EOSUSDT":"EOS","BNBUSDT":"BINANCE","BCHUSDT":"BITCOIN CASH"}
-coin_codes = {"BTCUSDT": "BTC", "ETHUSDT":"ETH","XRPUSDT":"XRP","DOGEUSDT":"DOGE","XTZUSDT":"XTZ","LTCUSDT":"LTC","EOSUSDT":"EOS","BNBUSDT":"BNB","BCHUSDT":"BCH"}
-coin_imgs = {"BTCUSDT": "BTC.png", "ETHUSDT":"ETH.png","XRPUSDT":"XRP.png","DOGEUSDT":"DOGE.png","XTZUSDT":"XTZ.png","LTCUSDT":"LITE.png","EOSUSDT":"EOS.png","BNBUSDT":"BNB.png","BCHUSDT":"BITCASH.png"}
+coin_names = {"BTCUSDT": "Bitcoin", "ETHUSDT":"Ethereum","XRPUSDT":"Ripple","DOGEUSDT":"Dogecoin","XTZUSDT":"Tezos","LTCUSDT":"Litecoin","EOSUSDT":"EOS","BNBUSDT":"Binance","BCHUSDT":"Bitcoin Cash"}
+coin_codes = {"BTCUSDT": "Bitcoin", "ETHUSDT":"Ethereum","XRPUSDT":"Ripple","DOGEUSDT":"Dogecoin","XTZUSDT":"Tezos","LTCUSDT":"Litecoin","EOSUSDT":"EOS","BNBUSDT":"Binance","BCHUSDT":"Bitcoin Cash"}
+# coin_codes = {"BTCUSDT": "BTC", "ETHUSDT":"ETH","XRPUSDT":"XRP","DOGEUSDT":"DOGE","XTZUSDT":"XTZ","LTCUSDT":"LTC","EOSUSDT":"EOS","BNBUSDT":"BNB","BCHUSDT":"BCH"}
+coin_imgs = {"BTCUSDT": "Bitcoin.png", "ETHUSDT":"Ethereum.png","XRPUSDT":"Ripple.png","DOGEUSDT":"Dogecoin.png","XTZUSDT":"Tezos.png","LTCUSDT":"Litecoin.png","EOSUSDT":"EOS.png","BNBUSDT":"Binance.png","BCHUSDT":"Bitcoin Cash.png"}
 
 timeframes = ['1m','5m','1h', '1d']
 plot_type = ['Line Plot','Candlestick']
@@ -61,15 +63,17 @@ tabs = dcc.Tabs(id = 'coin-tabs', value = symbols[0],
                 'paddingRight': "30px"})
 
 number_indicator = dcc.Graph(id='num-indicator', 
-        style = {'float':'right','marginRight':'30px'},
+        style = {'order':3,'marginRight':'30px','margin-left':'auto'},
         figure={
         'layout': go.Layout(
             paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)', height =200)})
+            plot_bgcolor='rgba(0,0,0,0)', height =200,
+            width=900,
+            )})
 
 def create_market_change_indicator(data):
     ''' 
-    Input is a dataframe containing data of atleast the last two timestamps
+    Input is a dataframe containing data of at least the last two timestamps
     '''
     current_data = data.iloc[1,:]
     previous_data = data.iloc[2,:]
@@ -80,20 +84,29 @@ def create_market_change_indicator(data):
         title = 'Closing Price',
         mode = "number+delta",
         value = current_data['close'],
-        domain = {'x': [0, 0.5], 'y': [0, 0]},
+        domain = {'x': [0, 0.33], 'y': [0, 0]},
         delta = {'reference': previous_data['close'], 'relative': True, 'position' : "bottom"},
-        number={"font":{"size":60}},
+        number={"font":{"size":60},'prefix':"$"},
         ))
     
     fig.add_trace(go.Indicator(
-        title = 'Volume',
+        title = 'Dollar Volume',
+        mode = "number+delta",
+        value = current_data['volume']*current_data['close'],
+        domain = {'x': [0.33, 0.66], 'y': [0, 0]},
+        delta = {'reference': previous_data['volume']*previous_data['close'], 'relative': True, 'position' : "bottom"},
+        number={"font":{"size":60},'prefix':"$"},
+        ))
+    
+    fig.add_trace(go.Indicator(
+        title = 'Trading Volume',
         mode = "number+delta",
         value = current_data['volume'],
-        domain = {'x': [0.5, 1.0], 'y': [0, 0]},
+        domain = {'x': [0.66, 1.0], 'y': [0, 0]},
         delta = {'reference': previous_data['volume'], 'relative': True, 'position' : "bottom"},
         number={"font":{"size":60}},
         ))
-    
+
     fig.update_layout(
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
@@ -265,11 +278,23 @@ selection_tabs = html.Div(id = 'selection',
                                 'width' : 1500},
                       children = [graph_title, graph_tabs, timeframe_title, timeframe_tabs,stat_title,stat_choice])
 
-title_indicators = html.H6 (children = 'Technical Indicators', 
+title_indicators = html.H6 (children = 'TECHNICAL INDICATORS', 
                 style = {'textAlign': 'center', 
                         'color': colors['text'], 
                         'font-family': 'Helvetica', 
-                        'font-size': '25px',
+                        'font-size': '30px',
+                        'font-weight': 9000,
+                        'paddingTop':10,
+                        'paddingBottom':0,
+                        'paddingLeft':30,
+                        'marginTop':0,
+                        'marginBottom':0})
+
+title_confluence = html.H6 (children = 'CONFLUENCE', 
+                style = {'textAlign': 'center', 
+                        'color': colors['text'], 
+                        'font-family': 'Helvetica', 
+                        'font-size': '30px',
                         'font-weight': 9000,
                         'paddingTop':10,
                         'paddingBottom':0,
@@ -375,19 +400,27 @@ def create_gauge_rsi_indicator(data):
     return fig
      
 
-bullet_graph = dcc.Graph(id = 'bullet-indicator',
-        style = {'width': '60%',
-                 'paddingBottom': 0,
-                 'paddingTop' : 0,
-                 'marginTop': 0,
-                 'marginBottom':0,
-                 'display': 'flex'},
-        figure = {
-            'layout': go.Layout(
-                paper_bgcolor = 'rgba(0,0,0,0)',
-                plot_bgcolor = 'rgba(0,0,0,0)',
-                height = 250)})
+# bullet_graph = dcc.Graph(id = 'bullet-indicator',
+#         style = {'width': '100%',
+#                  'paddingBottom': 0,
+#                  'paddingTop' : 0,
+#                  'marginTop': 0,
+#                  'marginBottom':0,
+#                  'display': 'flex'},
+#         figure = {
+#             'layout': go.Layout(
+#                 paper_bgcolor = 'rgba(0,0,0,0)',
+#                 plot_bgcolor = 'rgba(0,0,0,0)',
+#                 height = 250)})
 
+bullet_graph = daq.GraduatedBar(id = 'bullet-indicator',
+    color={"gradient": True, "ranges":{"firebrick":[0,0.4],"yellow":[0.4,0.7],"#205304":[0.7,1.0]}},
+    showCurrentValue=True,
+    size=1000,
+    min=0,
+    max=1,
+    step = 0.01,
+    )  
 
 def signal_indicator(close, values, macd_signal, ao_prev):
     if values[0] > 100 and values[0] < 150:
@@ -447,6 +480,8 @@ def signal_indicator(close, values, macd_signal, ao_prev):
                         signal_ema, signal_macd, signal_awesome, signal_ultimate] 
     return signals
 
+
+
 def create_bullet_graph(data, weights):
     close = data['close'][0]
     macd_signal = data['trend_macd_signal'][0]
@@ -475,60 +510,69 @@ def create_bullet_graph(data, weights):
     signals_value = np.array(signals_value)
     weighted_signals = weights@signals_value/np.sum(weights)
 
-    fig = go.Figure(go.Indicator(
-        mode = 'number+gauge',
-        gauge = {'shape': 'bullet',
-                 'axis' : {'range' : [0, 1]},
-                 'threshold' : {
-                     'line' : {'color': 'black', 'width': 3},
-                     'thickness' : 0.75,
-                     'value' : weighted_signals},
-                 'steps': [
-                     {'range' : [0, 0.2], 'color': 'greenyellow'},
-                     {'range' : [0.2, 0.4], 'color': 'khaki'},
-                     {'range' : [0.4, 0.6], 'color': 'ivory'},
-                     {'range' : [0.6, 0.8], 'color': 'darkred'},
-                     {'range' : [0.8, 1], 'color': 'maroon'}]},
-        value = weighted_signals,
-        domain = {'x': [0, 0], 'y': [0, 0]}))
+    # gradbar = daq.GraduatedBar(
+    # color={"gradient":True,"ranges":{"green":[0,4],"yellow":[4,7],"red":[7,10]}},
+    # # showCurrentValue=True,
+    # value=weighted_signals
+    # )  
+
+
+#     fig = go.Figure(go.Indicator(
+#         mode = 'number+gauge',
+#         gauge = {'shape': 'bullet',
+#                  'axis' : {'range' : [0, 1]},
+#                  'threshold' : {
+#                      'line' : {'color': 'black', 'width': 3},
+#                      'thickness' : 0.75,
+#                      'value' : weighted_signals},
+#                  'steps': [
+#                      {'range' : [0, 0.2], 'color': 'greenyellow'},
+#                      {'range' : [0.2, 0.4], 'color': 'khaki'},
+#                      {'range' : [0.4, 0.6], 'color': 'ivory'},
+#                      {'range' : [0.6, 0.8], 'color': 'darkred'},
+#                      {'range' : [0.8, 1], 'color': 'maroon'}]},
+#         value = weighted_signals,
+#         domain = {'x': [0, 0], 'y': [0, 0]}))
     
-    fig.add_annotation(x = 0, y = 1.4,
-            text = "BUY",
-            showarrow = False,
-            font = dict(
-                family = 'Helvetica',
-                size = 18
-            ))
+#     fig.add_annotation(x = 0, y = 1.4,
+#             text = "BUY",
+#             showarrow = False,
+#             font = dict(
+#                 family = 'Helvetica',
+#                 size = 18
+#             ))
 
-    fig.add_annotation(x = 0.375, y = 1.4,
-            text = "NEUTRAL",
-            showarrow = False,
-            font = dict(
-                family = 'Helvetica',
-                size = 18
-            ))
+#     fig.add_annotation(x = 0.375, y = 1.4,
+#             text = "NEUTRAL",
+#             showarrow = False,
+#             font = dict(
+#                 family = 'Helvetica',
+#                 size = 18
+#             ))
 
-    fig.add_annotation(x = 0.75, y = 1.4,
-            text = "SELL",
-            showarrow = False,
-            font = dict(
-                family = 'Helvetica',
-                size = 18
-            ))
+#     fig.add_annotation(x = 0.75, y = 1.4,
+#             text = "SELL",
+#             showarrow = False,
+#             font = dict(
+#                 family = 'Helvetica',
+#                 size = 18
+#             ))
 
-    fig.add_annotation(x = 0, y = 1.9,
-            text = "CONFLUENCE",
-            showarrow = False,
-            font = dict(
-                family = 'Helvetica',
-                size = 30
-            ))
+# #    fig.add_annotation(x = 0, y = 1.9,
+# #            text = "CONFLUENCE",
+# #            showarrow = False,
+# #            font = dict(
+# #                family = 'Helvetica',
+# #                size = 30
+# #            ))
 
-    fig.update_layout(
-        paper_bgcolor = colors['background'],
-        plot_bgcolor = colors['background'],
-        font = {'color': colors['text'], 'family': 'Helvetica'})
-    return fig
+#     fig.update_layout(
+#         paper_bgcolor = colors['background'],
+#         plot_bgcolor = colors['background'],
+#         font = {'color': colors['text'], 'family': 'Helvetica'})
+    # return fig
+    return weighted_signals
+
 
 
 day_interval = dcc.Interval(
@@ -546,7 +590,7 @@ techindicator_summary = html.Div(dash_table.DataTable(
     editable = False,
     style_header = {'background_color': colors['background'],
                     'font-family': 'Helvetica',
-                    'font-size': '120%',
+                    'font-size': '175%',
                     'fontWeight': 'bold',
                     'textAlign': 'center',
                     'marginTop': 0,
@@ -563,6 +607,7 @@ techindicator_summary = html.Div(dash_table.DataTable(
     style_cell = {'minWidt': 100, 
                   'width': 110,
                   'maxWidt': 300,
+                  'font-size' : '160%',
                   'font-family': 'Helvetica',
                   'backgroundColor': 'firebrick',
                   'color': colors['text'],
@@ -581,7 +626,8 @@ techindicator_summary = html.Div(dash_table.DataTable(
         }]
     ), 
     style={ 'width': '35%', 
-            'display': 'inline'})
+            'order':1, 
+            'height':370})
 
 def indicators_table(data):
     close = data['close'][0]
@@ -600,12 +646,13 @@ def indicators_table(data):
     df = df.to_dict('records')
     return df
 
-technicals = html.Div(children = [bullet_graph, techindicator_summary], 
-            style={'width': '100%', 'display': 'flex'})
+technicals = html.Div(children = [bullet_graph], 
+            style={'width': '100%', 'display': 'flex',"paddingLeft" : 300, "paddingTop" : 50,
+            "paddingBottom": 50})
 
 
 toppers = ["gainer","gainer_perc", "loser","loser_perc"]
-col_name = ["24h GAINER","24h GAINER","24h LOSER","24h LOSER"]
+col_name = ["24h Gainer","24h Gainer","24h Loser","24h Loser"]
 col_colours = ['#205304','firebrick']
 
 toppers_table = html.Div(dash_table.DataTable(
@@ -618,13 +665,13 @@ toppers_table = html.Div(dash_table.DataTable(
             for i,col in enumerate(toppers)],
     style_header = {'backgroundColor': '#000022',
                     'font-family': 'Helvetica',
-                    'font-size':"120%",
+                    'font-size':"180%",
                     'color':"#DADBFE",
-                    'fontWeight': 'bold',
+                    # 'fontWeight': 'bold',
                     'border': '0px',
                     'textAlign': 'center',
                     },
-    style_table = {'width': '10px',
+    style_table = {'width': '8px',
                    'paddingLeft': 50,
                    'paddingTop': 40},
     style_cell = {'minWidth': '180px', 'width': '180px', 'maxWidth': '180px',
@@ -635,7 +682,7 @@ toppers_table = html.Div(dash_table.DataTable(
     style_data={ 'border': '5px solid #000022'},
     style_data_conditional=([ {'if': {'column_id': c},
                                     'backgroundColor': col_colours[i],
-                                    'fontWeight': 'bold'
+                                    # 'fontWeight': 'bold'
                              } for i,c in enumerate(["gainer","loser"])] +
                              [{'if': {'column_id': c},
                                     'color': col_colours[i],
@@ -660,9 +707,9 @@ market_summary_table = html.Div(dash_table.DataTable(
     merge_duplicate_headers = True,
     style_header = {'backgroundColor': '#000022',
                     'font-family': 'Helvetica',
-                    'font-size':"120%",
+                    'font-size':"180%",
                     'color':"#DADBFE",
-                    'fontWeight': 'bold',
+                    # 'fontWeight': 'bold',
                     'border': '0px',
                     'textAlign':"center",
                     },
@@ -670,7 +717,7 @@ market_summary_table = html.Div(dash_table.DataTable(
                    'display':'inline-block'},
     style_cell={'minWidth': '180px', 'width': '180px', 'maxWidth': '180px',
                 'font-family': 'Helvetica',
-                'font-weight': 'bold',
+                # 'font-weight': 'bold',
                 'backgroundColor': '#000022',
                 'color': '#DADBFE',
                 'textAlign': 'center'},
@@ -954,14 +1001,13 @@ def market_summary_figure(data):
     return fig
 
 coin_logo_title = html.Div(html.Img(id='coin-logo-title',src=app.get_asset_url('img/BTC.png'),
-        style={'height':'40px', 
-                'width':'40px',}),
-    style = {'height':'100%','display':'inline','paddingLeft':100 }
+        style={'height':'50px', 
+                'width':'50px',}),
+    style = {'order':1,'align-self':'center','paddingLeft':150 }
 )
 
 coin_name_title = html.Div(
     html.Div(children = [
-        coin_logo_title, 
         html.H1(children = 'Bitcoin', id = 'coin-name-title',
                 style = {'textAlign': 'left', 
                         'color': colors['text'], 
@@ -973,12 +1019,11 @@ coin_name_title = html.Div(
                         'paddingLeft':60,
                         'marginTop':0,
                         'marginBottom':0,
-                        'display':'inline'
                         }),
         ],
         style = {'vertical-align':'middle','display':'table-cell'}
     ),
-    style = {'float':'left','height': 200,'display':'table'}
+    style = {'order':2,'align-self':'center','height': 200,'display':'table'}
 )
 
 logo = html.Img(id='logo',src=app.get_asset_url('img/logo.png'),
@@ -995,8 +1040,8 @@ layer_1 = html.Div(id = 'layer-1', children = [
 })
 
 layer_3 = html.Div(id = 'layer-3', children = [
-    coin_name_title, number_indicator
-],style = {'display':'inline-block','width':'100%'})
+    coin_logo_title, coin_name_title, number_indicator
+],style = {'display':'flex','width':'100%'})
 
 debug_text = html.H3(id = 'debug-text',children = 'hi', 
                 style = {'textAlign': 'left', 
@@ -1032,7 +1077,7 @@ layer_6 = html.Div(
 )
 
 def create_slider(id):
-    slider = dcc.Slider(id=id, min=0, max=1.0, step=0.1, value=0.5)
+    slider = dcc.Slider(id=id, min=0, max=1.0, step=0.01, value=0.5)
     return slider
     
 sliders = html.Div([
@@ -1044,4 +1089,16 @@ sliders = html.Div([
     create_slider('macd'),
     create_slider('awesome'),
     create_slider('ultimate'),
-])
+], style = {'order':2,
+            'width':'60%',
+            'margin-top':'auto',
+            'margin-left':'auto'
+}
+)
+
+weighing_layer = html.Div([
+    techindicator_summary,
+    sliders
+], style = {'width':'100%',
+            'display':'flex'
+})

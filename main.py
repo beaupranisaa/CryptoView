@@ -33,7 +33,8 @@ app.layout = html.Div(style = {'backgroundColor': colors['background'],
                       children = [minute_interval, 
                                 layer_1, tabs, layer_3, selection_tabs,
                                 layer_4,day_interval, title_indicators, gauge_indicator, 
-                                technicals, sliders, layer_6, storage_div ])
+                                title_confluence, technicals, weighing_layer, 
+                                layer_6, storage_div ])
 
 @app.callback(
     Output('ohlc', 'figure'),
@@ -93,7 +94,7 @@ def update_coin_logo(symbol):
     return app.get_asset_url(f'img/{coin_imgs[symbol]}')
 
 @app.callback([Output('rsi-gauge', 'figure'),
-               Output('bullet-indicator', 'figure')],
+               Output('bullet-indicator', 'value')],
              [Input('interval-component', 'n_intervals'),
               Input('coin-tabs', 'value'),
               Input('cci', 'value'),
