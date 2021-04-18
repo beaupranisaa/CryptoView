@@ -118,42 +118,16 @@ minute_interval = dcc.Interval(
         interval=60*1000,
         n_intervals=0
     )
-    
-ohlc_graph = dcc.Graph(id='ohlc',
-        config={'modeBarButtonsToAdd':['drawline',
-                                        'drawopenpath',
-                                        'drawcircle',
-                                        'drawrect',
-                                        'eraseshape'
-                                       ]},
-        style = {'display': 'inline-block', 'width': '100%'},
-        figure={
-        'layout': go.Layout(
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
-            height = 1000,
-            )})
-
-timeframe_title = html.H2 (children = 'Timeframe:', 
-                style = {'textAlign': 'center', 
-                        'color': colors['text'], 
-                        'font-family': 'Helvetica', 
-                        'font-size': '25px',
-                        'font-weight': 9000,
-                        'paddingTop':10,
-                        'paddingBottom':0,
-                        'paddingLeft':30,
-                        'marginTop':0,
-                        'marginBottom':0,
-                        'display': 'inline-block'})
 
 time_tabs_styles = {
                 'borderLeft': '3px solid #000022',
                 'borderRight': '3px solid #000022',
                 'width': '60px',
                 'height': '50px',
+                'paddingLeft': "15px",
+                'paddingBottom': "15px",
                 'border-radius': '15px',
-                'display': 'inline-block'
+                'display': 'flex',
             }
 
 time_tab_selected_style = {
@@ -161,8 +135,9 @@ time_tab_selected_style = {
                 'borderRight': '3px solid #000022',
                 'width': '60px',
                 'height': '50px',
+                'paddingLeft': "15px",
                 'border-radius': '15px',
-                'display': 'inline-block'
+                'display': 'flex'
             }
 
 timeframe_tabs = dcc.Tabs(id = 'time_tabs', value = timeframes[0],
@@ -174,27 +149,12 @@ timeframe_tabs = dcc.Tabs(id = 'time_tabs', value = timeframes[0],
         style = {'color': colors['text'],
                 'font-family': 'Helvetica',
                 'font-size':"120%",
-                'marginTop':"0px",
-                'paddingLeft': "0px",
-                'paddingRight': "0px",
-                'text-align': 'center',
+                'paddingLeft': "50px",
+                'paddingRight': "50px",
                 'height': '50px',
-                'display': 'inline-block',
-                'vertical-align': 'center',
+                'display': 'flex',
                 'border-radius': '15px',})
 
-graph_title = html.H2 (children = 'Plot Type:', 
-                style = {'textAlign': 'center', 
-                        'color': colors['text'], 
-                        'font-family': 'Helvetica', 
-                        'font-size': '25px',
-                        'font-weight': 9000,
-                        'paddingTop':10,
-                        'paddingBottom':0,
-                        'paddingLeft':30,
-                        'marginTop':0,
-                        'marginBottom':0,
-                        'display': 'inline-block'})
 graph_tabs_styles = {
                 'borderLeft': '3px solid #000022',
                 'borderRight': '3px solid #000022',
@@ -202,8 +162,8 @@ graph_tabs_styles = {
                 'width': '150px',
                 'height': '50px',
                 'border-radius': '15px',
-                'textAlign': 'center',
-                'display': 'inline-block'
+                'display': 'flex',
+                'text-align': 'center'
             }
 
 graph_tab_selected_style = {
@@ -214,7 +174,8 @@ graph_tab_selected_style = {
                 'height': '50px',
                 'border-radius': '15px',
                 'textAlign': 'center',
-                'display': 'inline-block'
+                'display': 'flex',
+                'text-align': 'center'
             }
 
 graph_tabs = dcc.Tabs(id = 'graph_tab', value = 'Candlestick',
@@ -231,50 +192,37 @@ graph_tabs = dcc.Tabs(id = 'graph_tab', value = 'Candlestick',
                 'paddingRight': "0px",
                 'text-align': 'center',
                 'height': '50px',
-                'display': 'inline-block',
+                'display': 'flex',
                 'vertical-align': 'center',
                 'border-radius': '15px',
                 })
-stat_title = html.H2 (children = 'Statistics:', 
-                style = {'textAlign': 'center', 
-                        'color': colors['text'], 
-                        'font-family': 'Helvetica', 
-                        'font-size': '25px',
-                        'font-weight': 9000,
-                        'paddingTop':10,
-                        'paddingBottom':0,
-                        'paddingLeft':30,
-                        'marginTop':0,
-                        'marginBottom':0,
-                        'display': 'inline-block'})
+
 stat_choice = dcc.Checklist(
                 id='macdmarket',
                 options=[{'label': i, 'value': i} for i in ['MACD', 'Market Volume']],
                 value=['MACD', 'Market Volume'],
+                inputStyle={'padding' : "10px"},
                 labelStyle={'display': 'inline-block',
-                'color': colors['text'],
-                'font-family': 'Helvetica',
-                'font-size':"150%"},
+                            'color': colors['text'],
+                            'font-family': 'Helvetica',
+                            'font-size':"150%",
+                            'paddingLeft' : "10px"},
                 style = {'font-family': 'Helvetica',
-                'font-size':"100%",
-                'marginTop':"0px",
-                'paddingLeft': "0px",
-                'paddingRight': "0px",
-                'text-align': 'center',
-                'height': '50px',
-                'display': 'inline-block',
-                'vertical-align': 'top',
-                'horizontalAlign': "center"})
+                        'font-size':"100%",
+                        'paddingTop' : "7px",
+                        'height': '50px',
+                        'display': 'flex'})
 
 selection_tabs = html.Div(id = 'selection',
                         style = {'backgroundColor': colors['background'], 
                                 'marginTop' : 0, 
                                 'marginBottom' : 0,
+                                'paddingLeft': "490px",
                                 'paddingTop' : 0,
                                 'paddingBottom': 0,
-                                'display': 'inline-block',
-                                'width' : 1500},
-                      children = [graph_title, graph_tabs, timeframe_title, timeframe_tabs,stat_title,stat_choice])
+                                'display': 'flex',
+                                'width' : 2000},
+                      children = [graph_tabs, timeframe_tabs, stat_choice])
 
 title_indicators = html.H6 (children = 'TECHNICAL INDICATORS', 
                 style = {'textAlign': 'center', 
@@ -735,7 +683,23 @@ market_summary_graph = html.Div(dcc.Graph(id='market_graph',
                  'paddingLeft': 100,
                  'paddingBottom': 150}
         )
-    
+
+ohlc_graph = dcc.Graph(id='ohlc',
+    config={'modeBarButtonsToAdd':['drawline',
+                                    'drawopenpath',
+                                    'drawcircle',
+                                    'drawrect',
+                                    'eraseshape']},
+    style = {'display': 'flex',
+            'width': '100%',
+            'paddingLeft': "250px",},
+    figure={
+    'layout': go.Layout(
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        height = 800,
+        width = 1500,
+        )}) 
 
 def create_ohlc(df_ohlc, graph_name, time_tabs_name, coin_tab_name, stat_name):
     timestamp_dict = {  '1m':df_ohlc.index.strftime("%H:%M %d/%m/%Y"),
@@ -775,21 +739,16 @@ def create_ohlc(df_ohlc, graph_name, time_tabs_name, coin_tab_name, stat_name):
             connectgaps=True, marker = dict(color = 'rgb(0, 0, 255)')),row=1, col=1)
         
         fig.add_trace(go.Scatter(x = x_data, y = df_ohlc['high'], mode = 'lines', yaxis="y1", xaxis="x1",
-            name='Highest',
+            name='High',
             connectgaps=True, marker = dict(color='rgb(225, 0, 0)')),row=1, col=1)
         
         fig.add_trace(go.Scatter(x = x_data, y = df_ohlc['low'], mode = 'lines', yaxis="y1", xaxis="x1",
+            name='Low',
             connectgaps=True, marker = dict(color='rgb(0, 255, 0)')),row=1, col=1)
 
     fig.update_layout(
-        yaxis=dict(
-        title="USD",
-        titlefont=dict(
-            color="#FFFFFF"
-        ),
-        tickfont=dict(
-            color="#FFFFFF"
-        ),
+        legend=dict(orientation="h",yanchor="bottom",y=1.0,xanchor="right",x=0.94),
+        yaxis=dict(title="USD",titlefont=dict(color="#FFFFFF"),tickfont=dict(color="#FFFFFF"),
         layer="above traces",
         anchor="free",
         side="left",
@@ -798,7 +757,10 @@ def create_ohlc(df_ohlc, graph_name, time_tabs_name, coin_tab_name, stat_name):
         plot_bgcolor='rgba(0,0,0,0)',
         font = {'color': colors['text'],'family': "Helvetica"},
         newshape_line_color='#FFF8B7',
-        newshape_line_width=2)
+        newshape_line_width=2,
+        margin_t=50,
+        margin_b=100
+        )
 
     if 'MACD' in stat_name:
         macd_data = ta.trend.macd(df_ohlc['close'])
@@ -849,20 +811,58 @@ def create_ohlc(df_ohlc, graph_name, time_tabs_name, coin_tab_name, stat_name):
                 side="right")
                 )
 
-    fig.update_xaxes(range=[1000,1200],
+    data_count = (fig.data[0].x).shape[0]
+
+    if data_count < 1200 :
+        fig.update_xaxes(range=[data_count-200,data_count],
             showgrid=False, zeroline=False, rangeslider_visible=False,
             showspikes=True, spikemode='across', spikesnap='cursor', showline=True,
             spikecolor="rgb(10, 10, 10)",spikethickness=0.3, spikedash='solid')
 
+        if graph_name == 'Line Plot':
+            y_min = min(fig.data[0].y[data_count-200:data_count])
+            y_max = max(fig.data[0].y[data_count-200:data_count])
+        else:
+            y_min = min(fig.data[0].low[data_count-200:data_count])
+            y_max = max(fig.data[0].high[data_count-200:data_count])
+        # fig.update_yaxes(range=[y_min-2,y_max+2],
+        #     showspikes=True, spikedash='solid',spikemode='across', showticklabels=True,
+        #     spikecolor="rgb(10, 10, 10)",spikesnap="cursor",spikethickness=0.3, )
+    else:
+        fig.update_xaxes(range=[1000,1200],
+            showgrid=False, zeroline=False, rangeslider_visible=False,
+            showspikes=True, spikemode='across', spikesnap='cursor', showline=True,
+            spikecolor="rgb(10, 10, 10)",spikethickness=0.3, spikedash='solid')
+        
+        if graph_name == 'Line Plot':
+            y_min = min(fig.data[0].y[data_count-200:data_count])
+            y_max = max(fig.data[0].y[data_count-200:data_count])
+        else:
+            y_min = min(fig.data[0].low[data_count-200:data_count])
+            y_max = max(fig.data[0].high[data_count-200:data_count])
+
     fig.update_yaxes(showspikes=True, spikedash='solid',spikemode='across', showticklabels=True,
-                    spikecolor="rgb(10, 10, 10)",spikesnap="cursor",spikethickness=0.3, )
+                spikecolor="rgb(10, 10, 10)",spikesnap="cursor",spikethickness=0.3, )
+        
+    # if graph_name == 'Line Plot':
+    #     y_mins = []
+    #     y_maxs = []
+    #     for trace_data in fig.data:
+    #         y_mins.append(min(trace_data.y))
+    #         y_maxs.append(max(trace_data.y))
+    #     y_min = min(y_mins)
+    #     y_max = max(y_maxs)
+    #     print(y_min)
+    #     print(y_max)
 
     if ('Market Volume' not in stat_name and 'MACD' not in stat_name):
         fig.update_layout(
+        yaxis = dict(range=[y_min,y_max]),
         xaxis=dict(showticklabels=True),
         xaxis2=dict(showticklabels=False))
     else:
         fig.update_layout(
+            yaxis = dict(range=[y_min,y_max]),
             xaxis=dict(showticklabels=False),
             xaxis2=dict(showticklabels=True),
             paper_bgcolor='rgba(0,0,0,0)',
