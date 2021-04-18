@@ -122,24 +122,23 @@ minute_interval = dcc.Interval(
     )
 
 time_tabs_styles = {
-                'borderLeft': '3px solid #000022',
-                'borderRight': '3px solid #000022',
+                'margin': '3px',
                 'width': '60px',
                 'height': '50px',
-                'paddingLeft': "15px",
-                'paddingBottom': "15px",
                 'border-radius': '15px',
                 'display': 'flex',
+                'justify-content': 'center',
+                'align-items': 'center'
             }
 
 time_tab_selected_style = {
-                'borderLeft': '3px solid #000022',
-                'borderRight': '3px solid #000022',
+                'margin': '3px',
                 'width': '60px',
                 'height': '50px',
-                'paddingLeft': "15px",
                 'border-radius': '15px',
-                'display': 'flex'
+                'display': 'flex',
+                'justify-content': 'center',
+                'align-items': 'center'
             }
 
 timeframe_tabs = dcc.Tabs(id = 'time_tabs', value = timeframes[0],
@@ -158,26 +157,23 @@ timeframe_tabs = dcc.Tabs(id = 'time_tabs', value = timeframes[0],
                 'border-radius': '15px',})
 
 graph_tabs_styles = {
-                'borderLeft': '3px solid #000022',
-                'borderRight': '3px solid #000022',
-                'borderTop': '3px solid #000022',
+                'margin': '3px',
                 'width': '150px',
                 'height': '50px',
                 'border-radius': '15px',
                 'display': 'flex',
-                'text-align': 'center'
+                'justify-content': 'center',
+                'align-items': 'center'
             }
 
 graph_tab_selected_style = {
-                'borderLeft': '3px solid #000022',
-                'borderRight': '3px solid #000022',
-                'borderTop': '3px solid #000022',
+                'margin': '3px',
                 'width': '150px',
                 'height': '50px',
                 'border-radius': '15px',
-                'textAlign': 'center',
                 'display': 'flex',
-                'text-align': 'center'
+                'justify-content': 'center',
+                'align-items': 'center'
             }
 
 graph_tabs = dcc.Tabs(id = 'graph_tab', value = 'Candlestick',
