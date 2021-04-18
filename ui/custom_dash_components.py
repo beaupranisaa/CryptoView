@@ -31,7 +31,7 @@ symbols = ["BTCUSDT", "ETHUSDT", "XRPUSDT", "DOGEUSDT", "XTZUSDT", "LTCUSDT", "E
 coin_names = {"BTCUSDT": "Bitcoin", "ETHUSDT":"Ethereum","XRPUSDT":"Ripple","DOGEUSDT":"Dogecoin","XTZUSDT":"Tezos","LTCUSDT":"Litecoin","EOSUSDT":"EOS","BNBUSDT":"Binance","BCHUSDT":"Bitcoin Cash"}
 coin_codes = {"BTCUSDT": "Bitcoin", "ETHUSDT":"Ethereum","XRPUSDT":"Ripple","DOGEUSDT":"Dogecoin","XTZUSDT":"Tezos","LTCUSDT":"Litecoin","EOSUSDT":"EOS","BNBUSDT":"Binance","BCHUSDT":"Bitcoin Cash"}
 # coin_codes = {"BTCUSDT": "BTC", "ETHUSDT":"ETH","XRPUSDT":"XRP","DOGEUSDT":"DOGE","XTZUSDT":"XTZ","LTCUSDT":"LTC","EOSUSDT":"EOS","BNBUSDT":"BNB","BCHUSDT":"BCH"}
-coin_imgs = {"BTCUSDT": "Bitcoin.png", "ETHUSDT":"Ethereum.png","XRPUSDT":"Ripple.png","DOGEUSDT":"Dogecoin.png","XTZUSDT":"Tezos.png","LTCUSDT":"Litecoin.png","EOSUSDT":"EOS.png","BNBUSDT":"Binance.png","BCHUSDT":"Bitcoin Cash.png"}
+coin_imgs = {"BTCUSDT": "BTC.png", "ETHUSDT":"ETH.png","XRPUSDT":"XRP.png","DOGEUSDT":"DOGE.png","XTZUSDT":"XTZ.png","LTCUSDT":"LITE.png","EOSUSDT":"EOS.png","BNBUSDT":"BNB.png","BCHUSDT":"BITCASH.png"}
 
 timeframes = ['1m','5m','1h', '1d']
 plot_type = ['Line Plot','Candlestick']
