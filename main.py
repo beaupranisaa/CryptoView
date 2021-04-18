@@ -33,7 +33,7 @@ app.layout = html.Div(style = {'backgroundColor': colors['background'],
                       children = [minute_interval, 
                                 layer_1, tabs, layer_3, selection_tabs,
                                 layer_4,day_interval, title_indicators, gauge_indicator, 
-                                title_confluence, technicals, weighing_layer, 
+                                title_confluence, layer_5, weighing_layer, 
                                 layer_6, storage_div ])
 
 @app.callback(

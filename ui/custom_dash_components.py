@@ -413,14 +413,60 @@ def create_gauge_rsi_indicator(data):
 #                 plot_bgcolor = 'rgba(0,0,0,0)',
 #                 height = 250)})
 
+
+sell = html.Div(
+    html.Div(children = [
+        html.H1(children = 'Sell', id = 'sell',
+                style = {'textAlign': 'left', 
+                        'color': 'firebrick', 
+                        'font-family': 'Helvetica', 
+                        'font-size': '60px',
+                        #'fontWeight': 'bold',
+                        'paddingTop':30,
+                        #'paddingBottom':100,
+                        'paddingLeft':120,
+                        #'marginTop':0,
+                        #'marginBottom':0,
+                        }),
+        ],
+        #style = {'vertical-align':'middle','display':'flex'}
+    ),
+    style = {'display':'flex'}
+)
+
+
+buy = html.Div(
+    html.Div(children = [
+        html.H1(children = 'Buy', id = 'buy',
+                style = {'textAlign': 'left', 
+                        'color': '#369d75', 
+                        'font-family': 'Helvetica', 
+                        'font-size': '60px',
+                        #'fontWeight': 'bold',
+                        'paddingTop':30,
+                        #'paddingBottom':50,
+                        'paddingRight':120,
+                        #'marginTop':0,
+                        #'marginBottom':0,
+                        }),
+        ],
+        #style = {'vertical-align':'middle','display':'flex'}
+    ),
+    style = {'display':'flex'}
+)
+
 bullet_graph = daq.GraduatedBar(id = 'bullet-indicator',
-    color={"gradient": True, "ranges":{"firebrick":[0,0.4],"#77C3EC":[0.4,0.6],"#205304":[0.6,1.0]}},
+    color={"gradient": True, "ranges":{"firebrick":[0,0.4],"#FDD023":[0.4,0.6],"#369d75":[0.6,1.0]}},
     showCurrentValue=True,
     size=1000,
     min=0,
     max=1,
     step = 0.01,
     )  
+
+technicals = html.Div(children = [bullet_graph], 
+            style={'width': '100%', 'display': 'flex',"paddingLeft" : 70, "paddingTop" : 50,
+            "paddingBottom": 60})
 
 def signal_indicator(close, values, macd_signal, ao_prev):
     if values[0] > 100 and values[0] < 150:
@@ -646,14 +692,9 @@ def indicators_table(data):
     df = df.to_dict('records')
     return df
 
-technicals = html.Div(children = [bullet_graph], 
-            style={'width': '100%', 'display': 'flex',"paddingLeft" : 300, "paddingTop" : 50,
-            "paddingBottom": 50})
-
-
 toppers = ["gainer","gainer_perc", "loser","loser_perc"]
 col_name = ["24h Gainer","24h Gainer","24h Loser","24h Loser"]
-col_colours = ['#205304','firebrick']
+col_colours = ['#369d75','firebrick']
 
 toppers_table = html.Div(dash_table.DataTable(
     id='Topper',
@@ -1060,6 +1101,9 @@ storage_div = html.Div(id='storage', style={'display': 'none'})
 layer_4 = html.Div(id = 'layer-4', children = [
     ohlc_graph
 ],style = {'display':'inline-block','width':'100%'})
+
+layer_5 = html.Div(id = 'layer-5', children = [ sell, technicals, buy
+],style = {'display':'flex','width':'100%'})
 
 layer_6 = html.Div(
     [
