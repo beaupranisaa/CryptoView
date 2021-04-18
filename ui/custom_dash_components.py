@@ -419,10 +419,12 @@ technicals = html.Div(children = [bullet_graph],
 def signal_indicator(close, values, macd_signal, ao_prev):
     if values[0] > 100 and values[0] < 150:
         signal_cci = 'SELL'
-    elif values[0] < -100 and values[0] > -200:
+    elif values[0] < -100 and values[0] > -150:
         signal_cci = 'BUY'
     elif values[0] >= 150:
         signal_cci = 'STRONG SELL'
+    elif values[0] <= -150:
+        signal_cci = 'STRONG BUY'
     else: 
         signal_cci = 'NEUTRAL'
 
@@ -436,10 +438,12 @@ def signal_indicator(close, values, macd_signal, ao_prev):
         signal_rsi = 'STRONG BUY'
     else:
         signal_rsi = 'NEUTRAL'
+
     if close > values[2]:
         signal_kama = 'BUY'
     else: 
         signal_kama = 'SELL'
+
     if values[3] or values[4] > close:
         signal_sma = 'BUY'
         signal_ema = 'BUY'
@@ -451,9 +455,9 @@ def signal_indicator(close, values, macd_signal, ao_prev):
         signal_ema = 'SELL'
     
     if values[5] > macd_signal:
-        signal_macd = 'SELL'
-    elif values[5] < macd_signal:
         signal_macd = 'BUY'
+    elif values[5] < macd_signal:
+        signal_macd = 'SELL'
     else:
         signal_macd = 'NEUTRAL'
 
@@ -464,10 +468,14 @@ def signal_indicator(close, values, macd_signal, ao_prev):
     else:
         signal_awesome = 'NEUTRAL'
 
-    if values[7] > 0 and values[7] <= 30:
+    if values[7] >= 0 and values[7] <= 30:
         signal_ultimate = 'BUY'
-    elif values[7] >= 70:
+    elif values[7] < 0:
+        signal_ultimate = 'STRONG BUY'
+    elif values[7] >= 70 and values[7] < 100:
         signal_ultimate = 'SELL'
+    elif values[7] >= 100:
+        signal_ultimate = 'STRONG SELL'
     else:
         signal_ultimate = 'NEUTRAL'
     signals = [signal_cci, signal_rsi, signal_kama, signal_sma, 
@@ -1041,7 +1049,7 @@ def market_summary_figure(data):
 
     return fig
 
-coin_logo_title = html.Div(html.Img(id='coin-logo-title',src=app.get_asset_url('img/BTC.png'),
+coin_logo_title = html.Div(html.Img(id = 'coin-logo-title',src=app.get_asset_url('img/BTC.png'),
         style={'height':'50px', 
                 'width':'50px',}),
     style = {'order':1,'align-self':'center','paddingLeft':150 }
@@ -1067,7 +1075,7 @@ coin_name_title = html.Div(
     style = {'order':2,'align-self':'center','height': 200,'display':'table'}
 )
 
-logo = html.Img(id='logo',src=app.get_asset_url('img/logo.png'),
+logo = html.Img(id='logo', src=app.get_asset_url('img/logo.png'),
         style={'height':'120px','display':'inline-block'})
 
 layer_1 = html.Div(id = 'layer-1', children = [
