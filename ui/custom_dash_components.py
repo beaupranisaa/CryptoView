@@ -414,7 +414,7 @@ def create_gauge_rsi_indicator(data):
 #                 height = 250)})
 
 bullet_graph = daq.GraduatedBar(id = 'bullet-indicator',
-    color={"gradient": True, "ranges":{"firebrick":[0,0.4],"yellow":[0.4,0.7],"#205304":[0.7,1.0]}},
+    color={"gradient": True, "ranges":{"firebrick":[0,0.4],"#77C3EC":[0.4,0.6],"#205304":[0.6,1.0]}},
     showCurrentValue=True,
     size=1000,
     min=0,
