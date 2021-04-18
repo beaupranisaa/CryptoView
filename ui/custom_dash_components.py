@@ -364,7 +364,7 @@ sell = html.Div(
                 style = {'textAlign': 'left', 
                         'color': 'firebrick', 
                         'font-family': 'Helvetica', 
-                        'font-size': '60px',
+                        'font-size': '50px',
                         #'fontWeight': 'bold',
                         'paddingTop':30,
                         #'paddingBottom':100,
@@ -373,7 +373,6 @@ sell = html.Div(
                         #'marginBottom':0,
                         }),
         ],
-        #style = {'vertical-align':'middle','display':'flex'}
     ),
     style = {'display':'flex'}
 )
@@ -385,7 +384,7 @@ buy = html.Div(
                 style = {'textAlign': 'left', 
                         'color': '#369d75', 
                         'font-family': 'Helvetica', 
-                        'font-size': '60px',
+                        'font-size': '50px',
                         #'fontWeight': 'bold',
                         'paddingTop':30,
                         #'paddingBottom':50,
@@ -394,7 +393,6 @@ buy = html.Div(
                         #'marginBottom':0,
                         }),
         ],
-        #style = {'vertical-align':'middle','display':'flex'}
     ),
     style = {'display':'flex'}
 )
@@ -1072,7 +1070,7 @@ coin_name_title = html.Div(
     style = {'order':2,'align-self':'center','height': 200,'display':'table'}
 )
 
-logo = html.Img(id='logo', src=app.get_asset_url('img/logo.png'),
+logo = html.Img(id='logo', src=app.get_asset_url('img/revised_logo.png'),
         style={'height':'120px','display':'inline-block'})
 
 layer_1 = html.Div(id = 'layer-1', children = [
