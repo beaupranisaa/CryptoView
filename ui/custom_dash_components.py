@@ -763,13 +763,14 @@ ohlc_graph = dcc.Graph(id='ohlc',
                                     'eraseshape']},
     style = {'display': 'flex',
             'width': '100%',
-            'paddingLeft': "250px",},
+            'paddingLeft': "80px",
+            },
     figure={
     'layout': go.Layout(
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         height = 800,
-        width = 1500,
+        #width = 1500,
         )}) 
 
 def create_ohlc(df_ohlc, graph_name, time_tabs_name, coin_tab_name, stat_name):
