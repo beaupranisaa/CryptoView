@@ -612,7 +612,7 @@ techindicator_summary = html.Div(dash_table.DataTable(
     style_data_conditional = [
         {
             'if': {'filter_query': '{24H Signals} eq "BUY" or {24H Signals} eq "STRONG BUY"'},
-            'backgroundColor': '#556B2F',
+            'backgroundColor': '#369d75',
             'color': 'white'
         },
         {
