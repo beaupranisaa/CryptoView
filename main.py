@@ -94,7 +94,7 @@ def update_coin_logo(symbol):
     return app.get_asset_url(f'img/{coin_imgs[symbol]}')
 
 @app.callback([Output('rsi-gauge', 'figure'),
-               Output('bullet-indicator', 'figure')],
+               Output('bullet-indicator', 'value')],
              [Input('interval-component', 'n_intervals'),
               Input('coin-tabs', 'value'),
               Input('cci', 'value'),
