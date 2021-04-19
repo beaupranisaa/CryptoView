@@ -1070,7 +1070,7 @@ coin_name_title = html.Div(
     style = {'order':2,'align-self':'center','height': 200,'display':'table'}
 )
 
-logo = html.Img(id='logo', src=app.get_asset_url('img/revised_logo.png'),
+logo = html.Img(id='logo', src=app.get_asset_url('img/logo.png'),
         style={'height':'120px','display':'inline-block'})
 
 layer_1 = html.Div(id = 'layer-1', children = [
