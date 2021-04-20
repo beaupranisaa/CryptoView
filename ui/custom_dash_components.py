@@ -68,7 +68,7 @@ number_indicator = dcc.Graph(id='num-indicator',
         'layout': go.Layout(
             paper_bgcolor='rgba(0,0,0,0)',
             plot_bgcolor='rgba(0,0,0,0)', height =200,
-            width=900,
+            width=1100,
             )})
 
 def create_market_change_indicator(data):
@@ -1139,7 +1139,8 @@ sliders = html.Div([
 ], style = {'order':2,
             'width':'60%',
             'margin-top':'auto',
-            'margin-left':'auto'
+            'margin-left':'auto',
+            'padding-right':'30px'
 }
 )
 
