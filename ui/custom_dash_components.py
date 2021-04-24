@@ -368,8 +368,7 @@ bullet_graph = daq.GraduatedBar(id = 'bullet-indicator',
     step = 0.01,
     style={'display':'flex','align-items': 'center',}
     )  
-            # 'margin-top':'auto',
-            # 'margin-left':'auto',
+
 technicals = html.Div(children = [bullet_graph], 
             style={'width': '100%', 
             'display': 'flex',
@@ -431,7 +430,7 @@ day_interval = dcc.Interval(
         interval=60*60*60*1000,
         n_intervals=0)
 
-indicators = ['Indicators', '24h Values', '24h Signals']
+indicators = ['Indicators', '24H Values', '24H Signals']
 indicators_col_name = ["Indicators","24h Values", "24h Signals"]
 
 techindicator_summary = html.Div(dash_table.DataTable(
