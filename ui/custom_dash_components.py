@@ -342,41 +342,6 @@ def create_gauge_rsi_indicator(data):
         plot_bgcolor = colors['background'],
         font = {'color': colors['text'], 'family': "Helvetica"})
     return fig
-     
-
-# bullet_graph = dcc.Graph(id = 'bullet-indicator',
-#         style = {'width': '100%',
-#                  'paddingBottom': 0,
-#                  'paddingTop' : 0,
-#                  'marginTop': 0,
-#                  'marginBottom':0,
-#                  'display': 'flex'},
-#         figure = {
-#             'layout': go.Layout(
-#                 paper_bgcolor = 'rgba(0,0,0,0)',
-#                 plot_bgcolor = 'rgba(0,0,0,0)',
-#                 height = 250)})
-
-
-sell = html.Div(
-    html.Div(children = [
-        html.H1(children = 'Sell', id = 'sell',
-                style = {'textAlign': 'left', 
-                        'color': 'firebrick', 
-                        'font-family': 'Helvetica', 
-                        'font-size': '50px',
-                        #'fontWeight': 'bold',
-                        'paddingTop':30,
-                        #'paddingBottom':100,
-                        'paddingLeft':120,
-                        #'marginTop':0,
-                        #'marginBottom':0,
-                        }),
-        ],
-    ),
-    style = {'display':'flex'}
-)
-
 
 buy = html.Div(
     html.Div(children = [
@@ -385,30 +350,50 @@ buy = html.Div(
                         'color': '#369d75', 
                         'font-family': 'Helvetica', 
                         'font-size': '50px',
-                        #'fontWeight': 'bold',
-                        'paddingTop':30,
-                        #'paddingBottom':50,
-                        'paddingRight':120,
-                        #'marginTop':0,
-                        #'marginBottom':0,
+                        'marginLeft':'400px',
+                        'marginRight':'200px',
+                        'marginTop':'30px',
+                        'paddingBottom': 60
                         }),
         ],
     ),
-    style = {'display':'flex'}
+    style = {'display':'flex','order':1}
 )
-
 bullet_graph = daq.GraduatedBar(id = 'bullet-indicator',
-    color={"gradient": True, "ranges":{"firebrick":[0,0.4],"#FDD023":[0.4,0.6],"#369d75":[0.6,1.0]}},
+    color={"gradient": True, "ranges":{"#369d75":[0,0.4],"#FDD023":[0.4,0.6],"firebrick":[0.6,1.0]}},
     showCurrentValue=True,
     size=1000,
     min=0,
     max=1,
     step = 0.01,
+    style={'display':'flex','align-items': 'center',}
     )  
-
+            # 'margin-top':'auto',
+            # 'margin-left':'auto',
 technicals = html.Div(children = [bullet_graph], 
-            style={'width': '100%', 'display': 'flex',"paddingLeft" : 70, "paddingTop" : 50,
-            "paddingBottom": 60})
+            style={'width': '100%', 
+            'display': 'flex',
+            "paddingBottom": 60,
+            'order':2,
+            'marginTop':'30px',
+            })
+
+sell = html.Div(
+    html.Div(children = [
+        html.H1(children = 'Sell', id = 'sell',
+                style = {'textAlign': 'left', 
+                        'color': 'firebrick', 
+                        'font-family': 'Helvetica', 
+                        'font-size': '50px',
+                        'marginRight':'400px',
+                        'marginLeft':'200px',
+                        'marginTop':'30px',
+                        'paddingBottom': 60
+                        }),
+        ],
+    ),
+    style = {'display':'flex','order':3}
+)
 
 def create_bullet_graph(data, weights):
     close = data['close'][0]
@@ -437,68 +422,6 @@ def create_bullet_graph(data, weights):
     weights = np.array(weights)
     signals_value = np.array(signals_value)
     weighted_signals = weights@signals_value/np.sum(weights)
-
-    # gradbar = daq.GraduatedBar(
-    # color={"gradient":True,"ranges":{"green":[0,4],"yellow":[4,7],"red":[7,10]}},
-    # # showCurrentValue=True,
-    # value=weighted_signals
-    # )  
-
-
-#     fig = go.Figure(go.Indicator(
-#         mode = 'number+gauge',
-#         gauge = {'shape': 'bullet',
-#                  'axis' : {'range' : [0, 1]},
-#                  'threshold' : {
-#                      'line' : {'color': 'black', 'width': 3},
-#                      'thickness' : 0.75,
-#                      'value' : weighted_signals},
-#                  'steps': [
-#                      {'range' : [0, 0.2], 'color': 'greenyellow'},
-#                      {'range' : [0.2, 0.4], 'color': 'khaki'},
-#                      {'range' : [0.4, 0.6], 'color': 'ivory'},
-#                      {'range' : [0.6, 0.8], 'color': 'darkred'},
-#                      {'range' : [0.8, 1], 'color': 'maroon'}]},
-#         value = weighted_signals,
-#         domain = {'x': [0, 0], 'y': [0, 0]}))
-    
-#     fig.add_annotation(x = 0, y = 1.4,
-#             text = "BUY",
-#             showarrow = False,
-#             font = dict(
-#                 family = 'Helvetica',
-#                 size = 18
-#             ))
-
-#     fig.add_annotation(x = 0.375, y = 1.4,
-#             text = "NEUTRAL",
-#             showarrow = False,
-#             font = dict(
-#                 family = 'Helvetica',
-#                 size = 18
-#             ))
-
-#     fig.add_annotation(x = 0.75, y = 1.4,
-#             text = "SELL",
-#             showarrow = False,
-#             font = dict(
-#                 family = 'Helvetica',
-#                 size = 18
-#             ))
-
-# #    fig.add_annotation(x = 0, y = 1.9,
-# #            text = "CONFLUENCE",
-# #            showarrow = False,
-# #            font = dict(
-# #                family = 'Helvetica',
-# #                size = 30
-# #            ))
-
-#     fig.update_layout(
-#         paper_bgcolor = colors['background'],
-#         plot_bgcolor = colors['background'],
-#         font = {'color': colors['text'], 'family': 'Helvetica'})
-    # return fig
     return weighted_signals
 
 
@@ -508,8 +431,8 @@ day_interval = dcc.Interval(
         interval=60*60*60*1000,
         n_intervals=0)
 
-indicators = ['Indicators', '24H Values', '24H Signals']
-indicators_col_name = ["Indicators","24H Values", "24H Signals"]
+indicators = ['Indicators', '24h Values', '24h Signals']
+indicators_col_name = ["Indicators","24h Values", "24h Signals"]
 
 techindicator_summary = html.Div(dash_table.DataTable(
     id = 'indicators-table',
@@ -519,7 +442,7 @@ techindicator_summary = html.Div(dash_table.DataTable(
     style_header = {'background_color': colors['background'],
                     'font-family': 'Helvetica',
                     'font-size': '175%',
-                    'fontWeight': 'bold',
+                    # 'fontWeight': 'bold',
                     'textAlign': 'center',
                     'marginTop': 0,
                     'color': colors['text'],
@@ -555,7 +478,11 @@ techindicator_summary = html.Div(dash_table.DataTable(
     ), 
     style={ 'width': '35%', 
             'order':1, 
-            'height':370})
+            'height':370,
+            'marginLeft': '300px',
+            'align-items':'center',
+            'paddingLeft': '150px'
+            })
 
 def indicators_table(data):
     close = data['close'][0]
@@ -615,7 +542,11 @@ toppers_table = html.Div(dash_table.DataTable(
     merge_duplicate_headers=True
     ),
     style = {'display':'flex',
-            'paddingTop': 10}
+            'marginTop': '20px',
+            'marginLeft': '200px',
+            'order':1,
+            'width': '35%'
+    }
     )
 market_sum = ["coin","close", "open","volume"]
 market_sum_col_name = ["Market Summary","Market Summary","Market Summary","Market Summary"]
@@ -652,13 +583,20 @@ market_summary_table = html.Div(dash_table.DataTable(
      ]),
     ),
     style = {'display':'flex',
-             'paddingTop': 10}
+             'marginTop': '10px',
+             'order':3,
+             'width': '45%',
+    }
     )
 
 market_summary_icon = html.Div(html.Div(id = 'market_icon'),
         style = {'display':'flex',
-                 'paddingLeft': 500,
-                 'paddingTop': 95}
+                 'paddingLeft': 100,
+                 'marginLeft': '300px',
+                 'marginTop': '95px',
+                 'order':2,
+                 'width': '10%'
+        }
         )
 
 market_summary_graph = html.Div(dcc.Graph(id='market_graph', 
@@ -677,8 +615,12 @@ market_summary_graph = html.Div(dcc.Graph(id='market_graph',
             )}
         ),
         style = {'display':'flex',
-                 'paddingLeft': 100,
-                 'paddingBottom': 150}
+                 'paddingRight': '250px',
+                 'marginBottom': '150px',
+                 'marginTop': '15px',
+                 'order':4,
+                 'width': '15%'
+        }
         )
 
 ohlc_graph = dcc.Graph(id='ohlc',
@@ -1004,7 +946,7 @@ coin_name_title = html.Div(
 
 logo = html.Img(id='logo', src=app.get_asset_url('img/logo.png'),
         style={'height':'120px','display':'inline-block'})
-
+  
 layer_1 = html.Div(id = 'layer-1', children = [
     logo, title
 ],style = { 
@@ -1040,20 +982,10 @@ layer_4 = html.Div(id = 'layer-4', children = [
 layer_5 = html.Div(id = 'layer-5', children = [ sell, technicals, buy
 ],style = {'display':'flex','width':'100%'})
 
-layer_6 = html.Div(
-    [
-        dbc.Row(
-            [
-                dbc.Col(toppers_table, style={'width':'200%'}),
-                dbc.Col(market_summary_icon),
-                dbc.Col(market_summary_table),
-                dbc.Col(market_summary_graph),
-            ],
-            style={'display':'flex'}
-        ),
-    ],
-    # style={'width':'100%'}
-)
+
+layer_6 =  html.Div(id = 'layer-6', children = [ toppers_table, market_summary_icon, market_summary_table,market_summary_graph
+],style = {'display':'flex','width':'100%'})
+
 
 def create_slider(id):
     slider = dcc.Slider(id=id, min=0, max=1.0, step=0.01, value=0.5)
@@ -1069,10 +1001,11 @@ sliders = html.Div([
     create_slider('awesome'),
     create_slider('ultimate'),
 ], style = {'order':2,
-            'width':'60%',
+            'width':'35%',
             'margin-top':'auto',
-            'margin-left':'auto',
-            'padding-right':'30px'
+            'margin-right':'100px',
+            'padding-left':'250px',
+            'align-items':'center'
 }
 )
 
