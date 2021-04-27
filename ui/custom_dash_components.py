@@ -346,12 +346,12 @@ def create_gauge_rsi_indicator(data):
 buy = html.Div(
     html.Div(children = [
         html.H1(children = 'Buy', id = 'buy',
-                style = {'textAlign': 'left', 
+                style = {'textAlign': 'center', 
                         'color': '#369d75', 
                         'font-family': 'Helvetica', 
                         'font-size': '50px',
-                        'marginLeft':'400px',
-                        'marginRight':'200px',
+#                        'marginLeft':'400px',
+#                        'marginRight':'200px',
                         'marginTop':'30px',
                         'paddingBottom': 60
                         }),
@@ -366,26 +366,27 @@ bullet_graph = daq.GraduatedBar(id = 'bullet-indicator',
     min=0,
     max=1,
     step = 0.01,
-    style={'display':'flex','align-items': 'center',}
+    style={'display':'flex','align-items': 'center'}
     )  
 
 technicals = html.Div(children = [bullet_graph], 
-            style={'width': '100%', 
+            style={
             'display': 'flex',
             "paddingBottom": 60,
             'order':2,
             'marginTop':'30px',
+            'justify-content':'center'
             })
 
 sell = html.Div(
     html.Div(children = [
         html.H1(children = 'Sell', id = 'sell',
-                style = {'textAlign': 'left', 
+                style = {'textAlign': 'center', 
                         'color': 'firebrick', 
                         'font-family': 'Helvetica', 
                         'font-size': '50px',
-                        'marginRight':'400px',
-                        'marginLeft':'200px',
+#                        'marginRight':'400px',
+#                        'marginLeft':'200px',
                         'marginTop':'30px',
                         'paddingBottom': 60
                         }),
@@ -980,7 +981,7 @@ layer_4 = html.Div(id = 'layer-4', children = [
 ],style = {'display':'inline-block','width':'100%'})
 
 layer_5 = html.Div(id = 'layer-5', children = [ sell, technicals, buy
-],style = {'display':'flex','width':'100%'})
+],style = {'display':'flex','width':'auto', 'justify-content':'space-evenly', 'margin':50})
 
 
 layer_6 =  html.Div(id = 'layer-6', children = [ toppers_table, market_summary_icon, market_summary_table,market_summary_graph
@@ -1006,7 +1007,7 @@ sliders = html.Div([
 #            'margin-right':'100px',
 #            'padding-left':'250px',
             'align-items':'center',
-            'margin-bottom':'20px',
+            #'margin-bottom':'20px',
             'flex-grow':2,
 }
 )
