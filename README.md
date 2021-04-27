@@ -1,5 +1,7 @@
 # CryptoView
 
+![gif](https://github.com/ruke1ire/CryptoView/blob/main/img/usage.gif "CryptoView")
+
 ## Getting Started:
 
 ### DataHandler
