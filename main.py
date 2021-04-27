@@ -54,9 +54,10 @@ def update_graph(graph_name, time_tabs_name, coin_tab_name, stat_name):
 
 @app.callback(Output('num-indicator', 'figure'),
               [Input('interval-component', 'n_intervals'),
-              Input('coin-tabs', 'value')])
-def update_data(n, symbol):
-    df = dh.get_data(symbol,'1m', limit = 3)
+              Input('coin-tabs', 'value'),
+              Input('time_tabs','value')])
+def update_data(n, symbol, timeframe):
+    df = dh.get_data(symbol,timeframe, limit = 3)
     return create_market_change_indicator(df)
 
 @app.callback(Output('Topper','data'),
