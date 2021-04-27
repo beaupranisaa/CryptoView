@@ -478,9 +478,10 @@ techindicator_summary = html.Div(dash_table.DataTable(
     style={ 'width': '35%', 
             'order':1, 
             'height':370,
-            'marginLeft': '300px',
+    #        'marginLeft': '300px',
             'align-items':'center',
-            'paddingLeft': '150px'
+            #'paddingLeft': '150px',
+            'flex-grow':2,
             })
 
 def indicators_table(data):
@@ -1002,9 +1003,11 @@ sliders = html.Div([
 ], style = {'order':2,
             'width':'35%',
             'margin-top':'auto',
-            'margin-right':'100px',
-            'padding-left':'250px',
-            'align-items':'center'
+#            'margin-right':'100px',
+#            'padding-left':'250px',
+            'align-items':'center',
+            'margin-bottom':'20px',
+            'flex-grow':2,
 }
 )
 
@@ -1012,5 +1015,7 @@ weighing_layer = html.Div([
     techindicator_summary,
     sliders
 ], style = {'width':'100%',
-            'display':'flex'
+            'display':'flex',
+            'justify-content': 'space-evenly'
+
 })
