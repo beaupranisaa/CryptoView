@@ -424,8 +424,6 @@ def create_bullet_graph(data, weights):
     weighted_signals = weights@signals_value/np.sum(weights)
     return weighted_signals
 
-
-
 day_interval = dcc.Interval(
         id='d-interval-component',
         interval=60*60*60*1000,

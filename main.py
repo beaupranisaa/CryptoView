@@ -43,8 +43,9 @@ app.layout = html.Div(style = {'backgroundColor': colors['background'],
     Input('time_tabs', 'value'),
     Input('coin-tabs', 'value'),
     Input('macdmarket','value'),
+    Input('interval-component','n_intervals'),
     )
-def update_graph(graph_name, time_tabs_name, coin_tab_name, stat_name):
+def update_graph(graph_name, time_tabs_name, coin_tab_name, stat_name, n):
     df_ohlc = dh.get_data(coin_tab_name, time_tabs_name, limit = 1200)
     df_ohlc = df_ohlc.sort_values(by=['timestamp'])
 
