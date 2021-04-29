@@ -1,10 +1,10 @@
 # CryptoView
 
+A crypto dashboard, with confluence.
+
 ![gif](https://github.com/ruke1ire/CryptoView/blob/master/img/usage.gif "CryptoView")
 
 ## Getting Started:
-
-### DataHandler
 
 1. Install the prerequisites
 ```console
@@ -31,21 +31,3 @@ python -m data_handler.database_updater
 ```console
 python main.py
 ```
-
-## TODO:
-
-OHLC:
-
-- [ ] Zooming thing works
-- [x] Changing the drawing color 
-- [x] Canvas for drawing
-- [x] Remove date-time for one of the graphs
-- [x] Scaling of volume and MACD
-- [x] Fix 5 mins
-- [x] Beautiful tabs
-
-Market Summary:
-
-- [x] Putting them in a row.
-- [x] Color correction
-- [x] Remove zoom/panning functions
